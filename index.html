@@ -1,591 +1,1198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Akshay Bambore — PhD Researcher, Hydrogen Pipeline Systems</title>
-<meta name="description" content="Akshay Bambore — PhD Researcher at ULB, modelling pressure losses in gaseous hydrogen pipelines.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="description" content="PhD researcher at Université libre de Bruxelles modelling pressure losses in gaseous hydrogen (GH2) pipelines — CFD, wall erosion, and hydrogen embrittlement degradation." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Akshay Bambore — PhD Researcher, Hydrogen Pipeline Systems" />
+<meta property="og:description" content="Modelling pressure losses in GH2 pipelines — CFD, Darcy-Weisbach vs AGA comparison, hydrogen embrittlement degradation." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23C81E3A'/><text x='50' y='66' font-size='52' font-family='Arial' font-weight='700' fill='white' text-anchor='middle'>H2</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-  :root{
-    --bg:#0b0b0c;
-    --surface:#151314;
-    --surface-2:#1c1919;
-    --hairline:#2c2424;
-    --red-600:#a80f28;
-    --red-500:#e01b3a;
-    --red-400:#ff2d46;
-    --text:#f2ede9;
-    --text-muted:#a89e98;
-    --text-faint:#6f6663;
-    --radius:2px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;} 
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Inter',sans-serif;
-    line-height:1.6;
-    overflow-x:hidden;
-    cursor:none;
-  }
-  ::selection{background:var(--red-500);color:#fff;}
+/* ==========================================================================
+   TOKENS
+   Palette: cool instrument-white with a single hazard-red accent — the
+   red of pipeline signage and gauge redlines, not a decorative brand hue.
+   Display: Space Grotesk (geometric, technical). Body: Inter. Data/labels:
+   IBM Plex Mono, used everywhere a real number appears.
+   ========================================================================== */
+:root{
+  --paper:#FFFFFF;
+  --paper-2:#F5F6F8;
+  --card:#FFFFFF;
+  --ink:#14161A;
+  --muted:#565D66;
+  --dim:#8B929B;
+  --line:rgba(20,22,26,0.11);
+  --line-2:rgba(20,22,26,0.22);
+  --red:#C81E3A;
+  --red-deep:#8E1029;
+  --red-pale:#FCE9EC;
+  --dw:#C81E3A;      /* Darcy-Weisbach series colour */
+  --aga:#14161A;     /* AGA series colour */
+  --display:'Space Grotesk',sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.7;font-size:16.5px;-webkit-font-smoothing:antialiased}
+::selection{background:var(--red);color:#fff}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font:inherit}
+.container{max-width:1180px;margin:0 auto;padding:0 clamp(1.2rem,5vw,3rem)}
+section{position:relative;padding:clamp(4rem,9vh,6.5rem) 0}
+.alt{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{margin-bottom:clamp(2rem,5vh,3rem)}
+.sec-label{font-family:var(--mono);font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem}
+.sec-label::after{content:'';flex:0 0 40px;height:1px;background:linear-gradient(90deg,var(--red),transparent)}
+h2.sec-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.8vw,2.6rem);line-height:1.08;letter-spacing:-.01em}
+.sec-sub{color:var(--muted);max-width:60ch;margin-top:.8rem;font-size:1.02rem}
 
-  h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:-0.01em;}
-  .mono{font-family:'JetBrains Mono',monospace;}
-  a{color:inherit;text-decoration:none;}
+/* ============================================================ NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1.1rem clamp(1.2rem,5vw,3rem);transition:background .3s,padding .3s,border-color .3s,box-shadow .3s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-color:var(--line);padding:.75rem clamp(1.2rem,5vw,3rem);box-shadow:0 1px 0 rgba(20,22,26,.02)}
+.logo{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.01em;display:flex;align-items:center;gap:.5rem}
+.logo .mark{width:26px;height:26px;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.68rem;font-weight:600;border-radius:5px}
+.nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center}
+.nav-links a{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);position:relative;transition:color .2s}
+.nav-links a:not(.nav-cta)::after{content:'';position:absolute;left:0;bottom:-5px;height:1px;width:0;background:var(--red);transition:width .3s var(--ease)}
+.nav-links a:hover,.nav-links a.active{color:var(--red-deep)}
+.nav-links a:not(.nav-cta):hover::after,.nav-links a:not(.nav-cta).active::after{width:100%}
+.nav-cta{border:1px solid var(--red);color:var(--red)!important;padding:.4rem 1rem;transition:background .2s,color .2s!important}
+.nav-cta:hover{background:var(--red);color:#fff!important}
+.hamburger{display:none;cursor:pointer;flex-direction:column;gap:5px;background:none;border:0;padding:6px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--ink);transition:transform .3s,opacity .3s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media (max-width:820px){
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:flex-start;gap:1rem;background:rgba(255,255,255,.98);backdrop-filter:blur(14px);padding:1.4rem;border-bottom:1px solid var(--line)}
+  .nav-links.open{display:flex}
+  .hamburger{display:flex}
+}
 
-  /* ---------- custom cursor : the reticle / "dusked mark" ---------- */
-  #reticle{
-    position:fixed;top:0;left:0;
-    width:26px;height:26px;
-    border:1px solid var(--red-400);
-    border-radius:50%;
-    pointer-events:none;
-    z-index:9999;
-    transform:translate(-50%,-50%);
-    transition:width .18s ease,height .18s ease,border-color .18s ease,background .18s ease;
-    mix-blend-mode:screen;
-  }
-  #reticle::before,#reticle::after{
-    content:'';position:absolute;background:var(--red-400);
-  }
-  #reticle::before{top:50%;left:-6px;width:4px;height:1px;transform:translateY(-50%);}
-  #reticle::after{top:-6px;left:50%;width:1px;height:4px;transform:translateX(-50%);}
-  #reticle.hover{
-    width:56px;height:56px;
-    border-color:var(--red-500);
-    background:rgba(224,27,58,0.08);
-  }
-  #reticle.hover::before,#reticle.hover::after{opacity:0;}
-  #cursor-dot{
-    position:fixed;top:0;left:0;width:4px;height:4px;background:var(--red-400);
-    border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);
-  }
-  @media (hover:none){
-    #reticle,#cursor-dot{display:none;}
-    body{cursor:auto;}
-  }
+/* ============================================================ HERO */
+#hero{min-height:100svh;display:flex;align-items:flex-end;position:relative;overflow:hidden;padding-top:6rem;padding-bottom:clamp(3rem,8vh,5rem)}
+#pipeField{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.08) 30%,rgba(255,255,255,.18) 60%,rgba(255,255,255,.96) 100%)}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:1180px;margin:0 auto;padding:0 clamp(1.2rem,5vw,3rem)}
+.hero-eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-deep);margin-bottom:1rem;display:flex;align-items:center;gap:.7rem}
+.hero-eyebrow::before{content:'';width:30px;height:1px;background:var(--red)}
+#hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2.3rem,6.6vw,4.6rem);line-height:1.04;letter-spacing:-.015em;margin-bottom:1.2rem;max-width:17ch}
+#hero h1 .grad{color:var(--red)}
+.hero-sub{color:var(--muted);font-size:clamp(1rem,1.4vw,1.14rem);max-width:58ch;margin-bottom:2rem}
+.hero-sub strong{color:var(--ink);font-weight:600}
+.hero-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.6rem}
+.hero-btns{display:flex;gap:.8rem;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;padding:.8rem 1.5rem;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .25s var(--ease);display:inline-block;border:1px solid transparent;border-radius:2px}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--red);color:#fff;font-weight:600}
+.btn-primary:hover{background:var(--red-deep)}
+.btn-outline{border-color:var(--line-2);color:var(--ink)}
+.btn-outline:hover{border-color:var(--red);color:var(--red-deep)}
+.hero-gauge{position:absolute;z-index:2;top:calc(6rem + 1rem);right:clamp(1.2rem,4vw,2.6rem);font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--dim);text-align:right;line-height:1.85;text-transform:uppercase}
+.hero-gauge b{color:var(--red-deep);font-weight:600}
+@media (max-width:760px){.hero-gauge{display:none}}
 
-  a,button,.hoverable{cursor:none;}
+/* ============================================================ TICKER */
+.ticker-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;background:var(--paper-2);padding:.8rem 0;position:relative;z-index:2}
+.ticker{display:flex;width:max-content;animation:ticker 42s linear infinite}
+.ticker-wrap:hover .ticker{animation-play-state:paused}
+.ticker span{font-family:var(--mono);font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);padding:0 1.5rem;display:flex;align-items:center;gap:1.5rem;white-space:nowrap}
+.ticker span::after{content:'◆';color:var(--red);font-size:.46rem}
+@keyframes ticker{to{transform:translateX(-50%)}}
 
-  /* ---------- layout shell ---------- */
-  .wrap{max-width:920px;margin:0 auto;padding:0 32px;position:relative;}
+/* ============================================================ ABOUT */
+.about-grid{display:grid;grid-template-columns:280px 1fr;gap:clamp(2rem,5vw,4rem);align-items:start}
+.portrait{position:relative}
+.portrait img{width:100%;aspect-ratio:4/5;object-fit:cover;filter:saturate(.95) contrast(1.03);border:1px solid var(--line-2)}
+.portrait::after{content:'';position:absolute;inset:0;border:1px solid var(--red);transform:translate(10px,10px);pointer-events:none;transition:transform .4s var(--ease);z-index:-1}
+.portrait:hover::after{transform:translate(5px,5px)}
+.portrait-tag{position:absolute;bottom:-10px;left:10px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);background:var(--paper);padding:2px 9px;border:1px solid var(--line)}
+.about-text p{color:var(--muted);margin-bottom:1rem;font-size:1.02rem}
+.about-text strong{color:var(--ink);font-weight:600}
+.about-links{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem}
+.chip{font-family:var(--mono);font-size:.78rem;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line-2);padding:.38rem .9rem;transition:color .2s,border-color .2s,transform .25s var(--ease);display:inline-flex;align-items:center;gap:.4rem;border-radius:2px}
+.chip:hover{color:var(--red-deep);border-color:var(--red);transform:translateY(-2px)}
+.chip::before{content:'↗';color:var(--red);font-size:.66rem}
+.stack{margin-top:2.8rem;border:1px solid var(--line)}
+.stack-row{display:grid;grid-template-columns:210px 1fr;gap:1.4rem;padding:1rem 1.4rem;border-bottom:1px solid var(--line);transition:background .25s}
+.stack-row:last-child{border-bottom:0}
+.stack-row:hover{background:var(--paper-2)}
+.stack-key{font-family:var(--mono);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-deep);padding-top:.15rem}
+.stack-val{color:var(--muted);font-size:.96rem}
+.stack-val em{color:var(--ink);font-style:normal;font-weight:500}
+@media (max-width:820px){.about-grid{grid-template-columns:1fr}.portrait{max-width:260px}.stack-row{grid-template-columns:1fr;gap:.25rem}}
 
-  /* faint background grid — pipe blueprint feel */
-  .blueprint-grid{
-    position:fixed;inset:0;z-index:0;pointer-events:none;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size:64px 64px;
-    mask-image:radial-gradient(ellipse at 20% 0%, black 0%, transparent 70%);
-  }
+/* ============================================================ EXPERIENCE */
+.runlog{border-left:1px solid var(--line-2);margin-left:4px}
+.run{position:relative;padding:0 0 2.2rem 2rem}
+.run:last-child{padding-bottom:0}
+.run::before{content:'';position:absolute;left:-5px;top:7px;width:9px;height:9px;background:var(--paper);border:1px solid var(--red);transform:rotate(45deg);transition:background .25s}
+.run:hover::before{background:var(--red)}
+.run-date{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-deep);margin-bottom:.3rem}
+.run h3{font-family:var(--display);font-weight:700;font-size:1.16rem}
+.run .run-role{color:var(--muted);font-size:.86rem;font-family:var(--mono);margin:.15rem 0 .55rem}
+.run ul{color:var(--muted);font-size:.96rem;max-width:68ch;padding-left:1.1rem}
+.run ul li{margin-bottom:.3rem}
 
-  /* ---------- the pipeline spine ---------- */
-  .spine{
-    position:absolute;
-    left:0; top:0; bottom:0;
-    width:2px;
-    background:linear-gradient(to bottom, transparent, var(--hairline) 4%, var(--hairline) 96%, transparent);
-  }
-  .spine-flow{
-    position:absolute;left:-1px;top:0;width:4px;height:120px;
-    background:linear-gradient(to bottom, transparent, var(--red-400), transparent);
-    animation:flow 5s linear infinite;
-    filter:blur(1px);
-    opacity:.75;
-  }
-  @keyframes flow{
-    0%{ transform:translateY(-120px); }
-    100%{ transform:translateY(100vh); }
-  }
-  .joint{
-    position:absolute;left:-4px;
-    width:10px;height:10px;border-radius:50%;
-    background:var(--bg);
-    border:2px solid var(--text-faint);
-  }
-  .section-has-joint{position:relative;}
+/* ============================================================ EDUCATION */
+.edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.1rem}
+.edu-card{background:var(--card);border:1px solid var(--line);padding:1.5rem 1.6rem;transition:transform .3s var(--ease),border-color .3s,background .3s;position:relative;overflow:hidden}
+.edu-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.edu-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 12px 28px rgba(20,22,26,.06)}
+.edu-card:hover::before{transform:scaleX(1)}
+.edu-year{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red-deep);margin-bottom:.55rem}
+.edu-card h3{font-family:var(--display);font-size:1.08rem;font-weight:700;margin-bottom:.25rem}
+.edu-card .inst{color:var(--muted);font-size:.86rem;font-family:var(--mono);margin-bottom:.55rem}
+.edu-card p{color:var(--muted);font-size:.92rem}
 
-  /* ---------- nav ---------- */
-  header{
-    position:sticky;top:0;z-index:50;
-    background:rgba(11,11,12,0.86);
-    backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--hairline);
-  }
-  nav.wrap{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:18px 32px;
-  }
-  .brand{font-size:15px;font-weight:600;letter-spacing:.02em;}
-  .brand span{color:var(--red-400);}
-  .navlinks{display:flex;gap:28px;align-items:center;}
-  .navlinks a{
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--text-muted);
-    padding:6px 0;border-bottom:1px solid transparent;
-    transition:color .2s, border-color .2s;
-  }
-  .navlinks a:hover{color:var(--text);border-color:var(--red-400);}
-  .navlinks a.cta{
-    color:var(--text);background:var(--red-600);
-    padding:8px 14px;border-radius:var(--radius);border:1px solid var(--red-500);
-  }
-  .navlinks a.cta:hover{background:var(--red-500);}
+/* ============================================================ SIMULATOR */
+#simulator{background:var(--ink);color:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#simulator .sec-label{color:#ff6b81}
+#simulator .sec-label::after{background:linear-gradient(90deg,#ff6b81,transparent)}
+#simulator .sec-sub{color:#B8BCC3}
+.sim-panel{display:grid;grid-template-columns:290px 1fr;gap:1.4rem;margin-top:2rem;background:#1B1D22;border:1px solid rgba(255,255,255,.09)}
+.sim-controls{padding:1.4rem;border-right:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;gap:1.1rem}
+.ctrl{display:flex;flex-direction:column;gap:.4rem}
+.ctrl label{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#9EA3AB;display:flex;justify-content:space-between}
+.ctrl label b{color:#fff;font-weight:600}
+.ctrl input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:rgba(255,255,255,.18);border-radius:2px;outline:none}
+.ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer;border:2px solid #fff}
+.ctrl input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer;border:2px solid #fff}
+.sim-controls .reset-btn{margin-top:.4rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#B8BCC3;border:1px solid rgba(255,255,255,.18);background:transparent;padding:.6rem;cursor:pointer;transition:border-color .2s,color .2s}
+.sim-controls .reset-btn:hover{border-color:var(--red);color:#fff}
+.sim-main{padding:1.4rem;min-width:0}
+.sim-tabs{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.09);padding-bottom:.8rem}
+.sim-tab{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#9EA3AB;background:transparent;border:1px solid rgba(255,255,255,.14);padding:.5rem .9rem;cursor:pointer;transition:border-color .2s,color .2s,background .2s;border-radius:2px}
+.sim-tab.active{color:#fff;border-color:var(--red);background:rgba(200,30,58,.18)}
+.chart-wrap{position:relative;background:#101216;border:1px solid rgba(255,255,255,.08)}
+canvas.chart{display:block;width:100%;height:340px}
+.chart-tip{position:absolute;pointer-events:none;background:#fff;color:var(--ink);font-family:var(--mono);font-size:.72rem;line-height:1.5;padding:.5rem .7rem;border-radius:3px;box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;transition:opacity .12s;white-space:pre;z-index:5}
+.sim-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-top:1.1rem}
+.stat{background:#101216;border:1px solid rgba(255,255,255,.08);padding:.75rem .9rem}
+.stat .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#8189;color:#9EA3AB;margin-bottom:.3rem}
+.stat .v{font-family:var(--mono);font-size:1.02rem;color:#fff;font-weight:600}
+.stat .v.red{color:#ff6b81}
+.sim-table{width:100%;border-collapse:collapse;margin-top:1.1rem;font-family:var(--mono);font-size:.82rem}
+.sim-table th,.sim-table td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid rgba(255,255,255,.09)}
+.sim-table th{color:#9EA3AB;font-weight:500;text-transform:uppercase;font-size:.68rem;letter-spacing:.08em}
+.sim-table td{color:#fff}
+.sim-table td:first-child{color:#B8BCC3}
+.verdict{display:inline-block;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .6rem;border-radius:2px}
+.verdict.agree{background:rgba(80,200,120,.18);color:#7CE0A0}
+.verdict.diverge{background:rgba(255,107,129,.18);color:#ff6b81}
+.sim-note{font-family:var(--mono);font-size:.72rem;color:#8B929B;margin-top:.9rem;line-height:1.7}
+@media (max-width:860px){.sim-panel{grid-template-columns:1fr}.sim-controls{border-right:0;border-bottom:1px solid rgba(255,255,255,.09)}}
 
-  /* ---------- hero ---------- */
-  .hero{
-    padding:96px 0 88px;
-    position:relative;
-  }
-  .eyebrow{
-    font-family:'JetBrains Mono',monospace;
-    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--red-400);
-    display:flex;align-items:center;gap:10px;margin-bottom:22px;
-  }
-  .eyebrow::before{content:'';width:24px;height:1px;background:var(--red-400);}
-  .hero h1{
-    font-size:clamp(40px,6vw,72px);
-    line-height:1.02;
-    max-width:820px;
-  }
-  .hero h1 em{
-    font-style:normal;color:var(--red-400);
-  }
-  .hero p.lede{
-    margin-top:26px;max-width:560px;
-    color:var(--text-muted);font-size:17px;
-  }
-  .hero-actions{display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;}
-  .btn{
-    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
-    padding:13px 22px;border-radius:var(--radius);
-    display:inline-flex;align-items:center;gap:8px;
-    transition:transform .15s ease, background .2s, border-color .2s;
-  }
-  .btn-primary{background:var(--red-600);border:1px solid var(--red-500);}
-  .btn-primary:hover{background:var(--red-500);transform:translateY(-2px);}
-  .btn-ghost{border:1px solid var(--hairline);color:var(--text-muted);}
-  .btn-ghost:hover{border-color:var(--red-400);color:var(--text);transform:translateY(-2px);}
+/* ============================================================ PUBLICATIONS */
+.pub-list{border-top:1px solid var(--line)}
+.pub{display:grid;grid-template-columns:80px 1fr auto;gap:1.4rem;align-items:baseline;padding:1.3rem .3rem;border-bottom:1px solid var(--line);transition:background .25s,padding .3s var(--ease)}
+.pub:hover{background:var(--paper-2);padding-left:.9rem}
+.pub-year{font-family:var(--mono);font-size:.88rem;color:var(--red-deep);font-weight:600}
+.pub h3{font-size:1.02rem;font-weight:600;line-height:1.42;margin-bottom:.2rem}
+.pub .venue{color:var(--muted);font-size:.84rem;font-family:var(--mono)}
+.pub-link{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-deep);border:1px solid var(--line-2);padding:.22rem .7rem;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
+.pub-link:hover{background:var(--red);color:#fff;border-color:var(--red)}
+@media (max-width:680px){.pub{grid-template-columns:1fr;gap:.35rem}.pub-link{justify-self:start}}
 
-  /* pressure gauge */
-  .gauge-wrap{
-    position:absolute;right:0;top:80px;
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-  }
-  .gauge-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-faint);letter-spacing:.1em;}
-  .gauge-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--red-400);}
-  @media (max-width:800px){.gauge-wrap{display:none;}}
+/* ============================================================ PRESENTATIONS / TIMELINE */
+.pres-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem}
+.pres-col h4{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red-deep);margin-bottom:.9rem}
+.pres-col ul{list-style:none}
+.pres-col li{padding:.7rem 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:.96rem}
+.pres-col li:last-child{border-bottom:0}
+.pres-col li strong{color:var(--ink);font-weight:600;display:block;margin-bottom:.1rem}
+@media (max-width:700px){.pres-grid{grid-template-columns:1fr;gap:1.6rem}}
 
-  /* ---------- section shell ---------- */
-  section{padding:64px 0;border-bottom:1px solid var(--hairline);position:relative;z-index:1;}
-  section:last-of-type{border-bottom:none;}
-  .section-head{display:flex;align-items:baseline;gap:16px;margin-bottom:34px;}
-  .section-num{font-family:'JetBrains Mono',monospace;color:var(--red-400);font-size:13px;}
-  .section-title{font-size:26px;}
-  .section-sub{color:var(--text-faint);font-size:13px;font-family:'JetBrains Mono',monospace;margin-left:auto;}
+.timeline{margin-top:2.6rem;border-top:1px solid var(--line)}
+.tl-row{display:grid;grid-template-columns:170px 1fr;gap:1.2rem;padding:.85rem .2rem;border-bottom:1px solid var(--line);font-size:.92rem}
+.tl-row .date{font-family:var(--mono);font-size:.78rem;color:var(--red-deep)}
+.tl-row .what{color:var(--muted)}
+@media (max-width:600px){.tl-row{grid-template-columns:1fr;gap:.2rem}}
 
-  /* about */
-  .about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;}
-  @media (max-width:720px){.about-grid{grid-template-columns:1fr;}}
-  .about-grid p{color:var(--text-muted);margin-bottom:16px;}
-  .about-grid p strong{color:var(--text);font-weight:500;}
-  .stat-card{
-    border:1px solid var(--hairline);background:var(--surface);
-    padding:20px;border-radius:var(--radius);margin-bottom:14px;
-  }
-  .stat-card .n{font-family:'Space Grotesk',sans-serif;font-size:28px;color:var(--red-400);font-weight:700;}
-  .stat-card .l{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+/* ============================================================ CERTIFICATES */
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.cert-card{background:var(--card);border:1px solid var(--line);padding:1.3rem 1.4rem;display:flex;flex-direction:column;gap:.6rem;transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.cert-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 12px 28px rgba(20,22,26,.06)}
+.cert-icon{width:32px;height:32px;border:1px solid var(--red);color:var(--red-deep);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.66rem;font-weight:600;border-radius:3px}
+.cert-card h4{font-family:var(--display);font-size:.98rem;font-weight:600;line-height:1.35}
+.cert-card .meta{font-family:var(--mono);font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.cert-card a{margin-top:auto;font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red-deep);display:inline-flex;align-items:center;gap:.35rem}
+.cert-card a:hover{color:var(--red)}
 
-  /* timeline / entries */
-  .entry{
-    display:grid;grid-template-columns:140px 1fr;gap:24px;
-    padding:24px 0;border-top:1px solid var(--hairline);
-  }
-  .entry:first-child{border-top:none;}
-  .entry-date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red-400);}
-  .entry h3{font-size:18px;margin-bottom:4px;}
-  .entry .org{color:var(--text-muted);font-size:14px;margin-bottom:12px;}
-  .entry ul{padding-left:18px;color:var(--text-muted);font-size:14.5px;}
-  .entry ul li{margin-bottom:6px;}
-  .entry .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-  .tag{
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
-    color:var(--text-faint);border:1px solid var(--hairline);padding:4px 8px;border-radius:var(--radius);
-  }
-  @media (max-width:640px){.entry{grid-template-columns:1fr;gap:8px;}}
+/* ============================================================ CONTACT */
+#contact .contact-wrap{text-align:left;max-width:800px}
+.contact-big{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,5.4vw,3.4rem);line-height:1.08;letter-spacing:-.01em;margin-bottom:1.2rem}
+.contact-big .grad{color:var(--red)}
+#contact p.lede{color:var(--muted);max-width:52ch;margin-bottom:2rem}
+.contact-links{display:flex;flex-wrap:wrap;gap:.7rem}
 
-  /* documents / publications / certificates - reference cards */
-  .doc-list{display:flex;flex-direction:column;gap:1px;background:var(--hairline);border:1px solid var(--hairline);border-radius:var(--radius);overflow:hidden;}
-  .doc{
-    background:var(--surface);
-    display:flex;align-items:center;gap:18px;
-    padding:18px 20px;
-    transition:background .18s ease;
-  }
-  .doc:hover{background:var(--surface-2);}
-  .doc-icon{
-    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red-400);
-    border:1px solid var(--red-600);width:38px;height:38px;flex:0 0 38px;
-    display:flex;align-items:center;justify-content:center;border-radius:var(--radius);
-  }
-  .doc-body{flex:1;min-width:0;}
-  .doc-title{font-size:15px;color:var(--text);}
-  .doc-meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-faint);margin-top:3px;}
-  .doc-arrow{font-family:'JetBrains Mono',monospace;color:var(--text-faint);font-size:16px;transition:transform .18s ease, color .18s ease;}
-  .doc:hover .doc-arrow{color:var(--red-400);transform:translate(3px,-3px);}
-  .doc.disabled{opacity:.45;}
-  .doc.disabled .doc-arrow{content:'—';}
+/* ============================================================ FOOTER */
+footer{border-top:1px solid var(--line);padding:1.8rem clamp(1.2rem,5vw,3rem);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
+footer a{color:var(--muted);transition:color .2s}
+footer a:hover{color:var(--red-deep)}
 
-  .note{
-    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-faint);
-    margin-top:14px;border-left:2px solid var(--red-600);padding-left:12px;
-  }
+.to-top{position:fixed;bottom:20px;right:20px;z-index:250;width:40px;height:40px;border:1px solid var(--line-2);cursor:pointer;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);color:var(--red-deep);font-size:1rem;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .3s,transform .3s,visibility .3s,border-color .2s;font-family:var(--mono);border-radius:3px}
+.to-top.show{opacity:1;visibility:visible;transform:none}
+.to-top:hover{border-color:var(--red)}
 
-  /* presentations grid */
-  .pres-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  @media (max-width:640px){.pres-grid{grid-template-columns:1fr;}}
-  .pres-card{border:1px solid var(--hairline);background:var(--surface);padding:18px;border-radius:var(--radius);}
-  .pres-kind{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red-400);text-transform:uppercase;letter-spacing:.08em;}
-  .pres-card p{margin-top:8px;font-size:14px;color:var(--text-muted);}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
 
-  /* footer / contact */
-  footer{padding:70px 0 60px;}
-  .contact-title{font-size:32px;max-width:520px;}
-  .contact-row{display:flex;gap:28px;margin-top:30px;flex-wrap:wrap;}
-  .contact-row a{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-muted);border-bottom:1px solid var(--hairline);padding-bottom:4px;}
-  .contact-row a:hover{color:var(--red-400);border-color:var(--red-400);}
-  .foot-meta{margin-top:60px;display:flex;justify-content:space-between;color:var(--text-faint);font-family:'JetBrains Mono',monospace;font-size:11px;flex-wrap:wrap;gap:10px;}
-
-  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
-  .reveal.in{opacity:1;transform:translateY(0);}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .ticker{animation:none;flex-wrap:wrap;width:auto}
+}
 </style>
 </head>
 <body>
 
-<div id="reticle"></div>
-<div id="cursor-dot"></div>
-<div class="blueprint-grid"></div>
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <a class="logo" href="#hero"><span class="mark">H₂</span> Akshay Bambore</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#simulator">Simulator</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#certificates">Certificates</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
 
-<header>
-  <nav class="wrap">
-    <div class="brand">AKSHAY<span>.</span>BAMBORE</div>
-    <div class="navlinks">
-      <a href="#about">About</a>
-      <a href="#research">Research</a>
-      <a href="#publications">Publications</a>
-      <a href="#certificates">Certificates</a>
-      <a href="#contact">Contact</a>
-      <a class="cta hoverable" href="documents/cv.pdf" target="_blank" rel="noopener">View CV ↗</a>
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <canvas id="pipeField" aria-hidden="true"></canvas>
+  <div class="hero-scrim"></div>
+
+  <div class="hero-gauge">
+    <b>Fig. 0</b> — GH₂ pipeline segment<br />
+    pressure decay between compressor stations<br />
+    live · move your cursor to perturb the flow
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Dept. of Aero-Thermo-Mechanics · Université libre de Bruxelles</div>
+    <h1>I model how hydrogen pipelines <span class="grad">lose pressure — and wear out.</span></h1>
+    <p class="hero-sub">
+      I'm <strong>Akshay Bambore</strong>, a PhD researcher studying pressure losses in gaseous
+      hydrogen (GH₂) pipelines: CFD-based pipe-flow modelling, a wall erosion model, and how
+      internal surface degradation from hydrogen embrittlement changes performance over years
+      of operation — validated against a purpose-built pressure-loss test bench.
+    </p>
+    <div class="hero-row">
+      <div class="hero-btns">
+        <a href="#simulator" class="btn btn-primary">Try the pressure-loss simulator</a>
+        <a href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener" class="btn btn-outline">View CV</a>
+      </div>
     </div>
-  </nav>
-</header>
+  </div>
+</section>
 
-<main class="wrap" style="position:relative;">
-  <div class="spine"><div class="spine-flow"></div></div>
+<!-- ═══ TICKER ═══ -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker" id="ticker">
+    <span>GH₂ Pipelines</span><span>Pressure Loss Modelling</span><span>Darcy-Weisbach</span><span>AGA Equation</span><span>Hydrogen Embrittlement</span><span>Wall Erosion Model</span><span>CFD</span><span>Python</span><span>Compressibility Factor Z(P)</span><span>Test Bench Validation</span>
+  </div>
+</div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="eyebrow mono">PhD Researcher — Aero-Thermo-Mechanics, ULB Brussels</div>
-    <h1>Modelling how <em>hydrogen</em><br>moves — and loses<br>pressure — through pipe.</h1>
-    <p class="lede">I study pressure losses in gaseous hydrogen pipelines: how internal surfaces degrade under years of pressure and erosion, and how to predict that degradation with CFD and mathematical modelling before it happens in the field.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary hoverable" href="documents/cv.pdf" target="_blank" rel="noopener">Download CV</a>
-      <a class="btn btn-ghost hoverable" href="#publications">Read the publications</a>
-      <a class="btn btn-ghost hoverable" href="#research">See the research</a>
-    </div>
-
-    <div class="gauge-wrap mono">
-      <div class="gauge-label">ΔP MODEL — LIVE READOUT</div>
-      <svg width="120" height="70" viewBox="0 0 120 70">
-        <path d="M10,65 A50,50 0 0,1 110,65" fill="none" stroke="#2c2424" stroke-width="6"/>
-        <path id="gaugeArc" d="M10,65 A50,50 0 0,1 110,65" fill="none" stroke="#ff2d46" stroke-width="6" stroke-dasharray="157" stroke-dashoffset="157"/>
-        <line id="needle" x1="60" y1="65" x2="60" y2="22" stroke="#f2ede9" stroke-width="2"/>
-        <circle cx="60" cy="65" r="4" fill="#f2ede9"/>
-      </svg>
-      <div class="gauge-value" id="gaugeValue">— bar</div>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about" class="section-has-joint reveal">
-    <div class="joint" style="top:40px;"></div>
-    <div class="section-head">
-      <span class="section-num mono">01</span>
-      <h2 class="section-title">About</h2>
-      <span class="section-sub">BRUSSELS, BE</span>
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="sec-label">01 · About</div>
+      <h2 class="sec-title">From governing equations<br />to a validated test bench.</h2>
     </div>
     <div class="about-grid">
-      <div>
-        <p><strong>I work on the physical limits of hydrogen infrastructure.</strong> My PhD at the Université Libre de Bruxelles focuses on gaseous hydrogen (GH2) pipelines — specifically, how total pressure losses evolve over years and decades of operation as internal pipe surfaces degrade from hydrogen embrittlement and erosion.</p>
-        <p>The work sits between two disciplines: computational fluid dynamics, where I run 2D and 3D simulations of pipe flow, and applied mathematics, where I build and validate wall erosion models against real experimental data from a dedicated GH2 pressure-loss test bench.</p>
-        <p>Before this, I trained as an aerospace and mechanical engineer — a Master's at Sapienza University of Rome, a Bachelor's at VTU Belgaum — and spent three years at Tata Consultancy Services testing enterprise software, which is where I learned to be pedantic about validation, defect tracking, and not trusting a result until it's been checked twice.</p>
-        <p>My research is funded through the <strong>Win4Excellence</strong> project, backed by the Walloon Region's SPW Economy Employment Research and the Walloon Region Recovery Plan.</p>
+      <div class="portrait reveal">
+        <img src="profile.jpg" alt="Akshay Bambore" />
+        <div class="portrait-tag">Brussels, Belgium</div>
       </div>
-      <div>
-        <div class="stat-card"><div class="n">2024</div><div class="l">PhD started, ULB</div></div>
-        <div class="stat-card"><div class="n">2</div><div class="l">Publications, SDEWES 2025 / MDPI Energies</div></div>
-        <div class="stat-card"><div class="n">3</div><div class="l">Countries studied &amp; worked in — India, Italy, Belgium</div></div>
+      <div class="about-text reveal">
+        <p>I'm a PhD researcher in the <strong>Department of Aero-Thermo-Mechanics</strong> at the <strong>Université libre de Bruxelles (ULB)</strong>, working on pressure-loss modelling for gaseous hydrogen (GH₂) pipelines. My work covers 2D and 3D pipe-flow CFD, development of a wall erosion model, and how a pipeline's internal surface condition degrades over years or decades of operation under hydrogen embrittlement and pressure cycling.</p>
+        <p>Alongside the modelling, I analyse external experimental data and work on the development and validation of a dedicated <strong>GH₂ pipe pressure-loss test bench</strong>, so the numerical models are checked against real measurements rather than theory alone.</p>
+        <p>Before the PhD, I completed a Master's in Aerospace Engineering at <strong>Sapienza University of Rome</strong> and a Bachelor's in Mechanical Engineering at <strong>VTU, Belgaum</strong>, then spent three years at <strong>Tata Consultancy Services</strong> as a manual software tester, working on validation rules, workflow automation, and defect tracking for enterprise Salesforce deployments.</p>
+        <div class="about-links">
+          <a class="chip" href="mailto:akshay.bambore@ulb.be">Email</a>
+          <a class="chip" href="tel:+32497751365">Phone</a>
+          <a class="chip" href="https://brite-research.be/akshay-bambore" target="_blank" rel="noopener">BRITE research group</a>
+          <a class="chip" href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener">Full CV</a>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- RESEARCH -->
-  <section id="research" class="section-has-joint reveal">
-    <div class="joint" style="top:40px;"></div>
-    <div class="section-head">
-      <span class="section-num mono">02</span>
-      <h2 class="section-title">Research Experience</h2>
+    <div class="stack reveal">
+      <div class="stack-row">
+        <div class="stack-key">pipeline engineering</div>
+        <div class="stack-val">Pressure-loss modelling via <em>Darcy-Weisbach</em> and the <em>AGA equation</em>, compressibility factor Z(P) interpolation, compression-station siting, hydrogen embrittlement degradation analysis</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-key">cfd &amp; numerics</div>
+        <div class="stack-val">2D/3D pipe-flow computing, wall erosion model development, Colebrook-White friction factor iteration, mathematical modelling of pressure losses</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-key">experimental</div>
+        <div class="stack-val">GH₂ pressure-loss test bench development &amp; validation, laser diffraction droplet-size characterisation (SMPATEC HELOS-VARIO/KR), spray control system operation</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-key">programming</div>
+        <div class="stack-val"><em>Python</em> (NumPy, Matplotlib, PyQt5) for simulation tooling and interactive models</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-key">industry tools</div>
+        <div class="stack-val">Salesforce (validation rules, workflow automation, sharing rules), Azure DevOps (defect tracking, test-cycle reporting)</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-key">languages</div>
+        <div class="stack-val">English — proficient · French — beginner</div>
+      </div>
     </div>
+  </div>
+</section>
 
-    <div class="entry">
-      <div class="entry-date mono">2024 —<br>Present</div>
-      <div>
+<!-- ═══ EXPERIENCE ═══ -->
+<section id="experience" class="alt">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="sec-label">02 · Experience</div>
+      <h2 class="sec-title">Run log.</h2>
+      <p class="sec-sub">Research and industry experience spanning pipeline physics, icing-tunnel instrumentation, and enterprise software testing.</p>
+    </div>
+    <div class="runlog">
+      <div class="run reveal">
+        <div class="run-date">2024 — Present</div>
         <h3>PhD Researcher</h3>
-        <div class="org">Dept. of Aero-Thermo-Mechanics, ULB — Study, Modelling and Computing Pressure Losses in Hydrogen Pipeline</div>
+        <div class="run-role">Dept. of Aero-Thermo-Mechanics, ULB · Study, Modelling and Computing Pressure Losses in Hydrogen Pipelines</div>
         <ul>
-          <li>Determine total pressure losses in GH2 pipelines and their evolution over years/decades of operation.</li>
-          <li>Model internal surface degradation from hydrogen embrittlement and erosion under pressure.</li>
-          <li>Run 2D and 3D CFD computations of pipe flow and pressure loss.</li>
-          <li>Develop a wall erosion model from first principles.</li>
-          <li>Design and validate a GH2 pipe pressure-loss test bench against external experimental data.</li>
+          <li>Determine total pressure losses in GH₂ pipelines and their evolution over years/decades of operation as internal surface condition degrades from hydrogen embrittlement and erosion.</li>
+          <li>Run CFD and mathematical models for 2D and 3D pipe flow and pressure loss; develop a wall erosion model.</li>
+          <li>Analyse external experimental data and support development and validation of a GH₂ pipe pressure-loss test bench.</li>
         </ul>
-        <div class="tags">
-          <span class="tag">CFD</span><span class="tag">Hydrogen Embrittlement</span><span class="tag">Erosion Modelling</span><span class="tag">Win4Excellence</span>
-        </div>
+        <p class="run-desc" style="margin-top:.6rem;font-family:var(--mono);font-size:.82rem;color:var(--dim)">Funded by the Win4Excellence project — SPW Economy Employment Research (Walloon Region) and the Walloon Region Recovery Plan, agreement no. 2310142.</p>
       </div>
-    </div>
-
-    <div class="entry">
-      <div class="entry-date mono">2019</div>
-      <div>
+      <div class="run reveal">
+        <div class="run-date">2019</div>
         <h3>Research Intern</h3>
-        <div class="org">Dept. of Aero-Thermo-Mechanics — Experimental Characterization of Rainfall Injectors for Icing Wind Tunnel</div>
+        <div class="run-role">Dept. of Aero-Thermo-Mechanics · Experimental Characterization of Rainfall Injectors for Icing Wind Tunnel</div>
         <ul>
-          <li>Ran high-precision laser diffraction tests (SMPATEC HELOS-VARIO/KR) to characterize droplet size distribution across ten rainfall nozzles.</li>
-          <li>Operated a Model Delta Autojet 2008+ spray control panel with PulsaJet nozzles to simulate light, moderate, and heavy rainfall, plus fog.</li>
+          <li>Ran high-precision laser diffraction tests on a SMPATEC HELOS-VARIO/KR system to characterise droplet-size distribution across ten rainfall nozzles.</li>
+          <li>Operated a Model Delta Autojet 2008+ spray control panel and PulsaJet nozzles to simulate light, moderate, and heavy rainfall, and fog.</li>
+        </ul>
+      </div>
+      <div class="run reveal">
+        <div class="run-date">2021 — 2024</div>
+        <h3>Tata Consultancy Services</h3>
+        <div class="run-role">Manual Software Tester</div>
+        <ul>
+          <li>Tested validation rules, workflow rules, approval processes, field updates, and email alerts against application requirements.</li>
+          <li>Created and customised users; tested security and sharing rules across profiles, roles, and record types.</li>
+          <li>Built business-facing reports and dashboards; ran unit and regression testing on individual modules and the full application.</li>
+          <li>Tracked defects and prepared test-cycle progress reports in Azure DevOps, using BDD test cases where practical.</li>
         </ul>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- INDUSTRY -->
-  <section id="industry" class="section-has-joint reveal">
-    <div class="joint" style="top:40px;"></div>
-    <div class="section-head">
-      <span class="section-num mono">03</span>
-      <h2 class="section-title">Industry Experience</h2>
+<!-- ═══ EDUCATION ═══ -->
+<section id="education">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="sec-label">03 · Education</div>
+      <h2 class="sec-title">Academic background.</h2>
     </div>
-    <div class="entry">
-      <div class="entry-date mono">2021 —<br>2024</div>
-      <div>
-        <h3>Manual Software Tester</h3>
-        <div class="org">Tata Consultancy Services</div>
+    <div class="edu-grid">
+      <div class="edu-card reveal">
+        <div class="edu-year">2024 — Present</div>
+        <h3>PhD, Aero-Thermo-Mechanics</h3>
+        <div class="inst">Université libre de Bruxelles · Belgium</div>
+        <p>Pressure-loss modelling and wall erosion modelling for GH₂ pipelines, with test-bench validation.</p>
+      </div>
+      <div class="edu-card reveal">
+        <div class="edu-year">2017 — 2020</div>
+        <h3>Masters in Aerospace Engineering</h3>
+        <div class="inst">Sapienza University of Rome · Italy</div>
+        <p>Aerospace engineering fundamentals with a focus on fluid dynamics and propulsion.</p>
+      </div>
+      <div class="edu-card reveal">
+        <div class="edu-year">2012 — 2016</div>
+        <h3>Bachelors of Mechanical Engineering</h3>
+        <div class="inst">VTU Belgaum · India</div>
+        <p>Core mechanical engineering: thermodynamics, fluid mechanics, and machine design.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SIMULATOR ═══ -->
+<section id="simulator">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="sec-label">04 · Live Tool</div>
+      <h2 class="sec-title">GH₂ pipeline pressure-loss simulator.</h2>
+      <p class="sec-sub">A browser port of my PyQt5 research tool. It integrates pressure loss along a pipeline two ways — Darcy-Weisbach with a Colebrook-White friction factor (Re-dependent), and the AGA fully-turbulent equation — using the same tabulated compressibility factor Z(P) and equation of state in both. Drag the sliders; everything recomputes instantly, entirely in your browser.</p>
+    </div>
+
+    <div class="sim-panel reveal">
+      <div class="sim-controls">
+        <div class="ctrl">
+          <label>Inlet pressure <b id="lbl_pressure">90 bar</b></label>
+          <input type="range" id="s_pressure" min="50" max="120" step="1" value="90" />
+        </div>
+        <div class="ctrl">
+          <label>Inlet velocity <b id="lbl_velocity">10.000 m/s</b></label>
+          <input type="range" id="s_velocity" min="1" max="50" step="0.1" value="10" />
+        </div>
+        <div class="ctrl">
+          <label>Pipe diameter <b id="lbl_diameter">0.900 m</b></label>
+          <input type="range" id="s_diameter" min="0.2" max="2" step="0.001" value="0.9" />
+        </div>
+        <div class="ctrl">
+          <label>Pipeline length <b id="lbl_length">500.00 km</b></label>
+          <input type="range" id="s_length" min="0.01" max="2000" step="0.5" value="500" />
+        </div>
+        <div class="ctrl">
+          <label>Pipe roughness <b id="lbl_roughness">0.0462 mm</b></label>
+          <input type="range" id="s_roughness" min="0.01" max="4" step="0.0001" value="0.0462" />
+        </div>
+        <div class="ctrl">
+          <label>Compression trigger <b id="lbl_compress">30 bar</b></label>
+          <input type="range" id="s_compress" min="10" max="100" step="1" value="30" />
+        </div>
+        <button class="reset-btn" id="resetBtn">Reset to defaults</button>
+      </div>
+
+      <div class="sim-main">
+        <div class="sim-tabs" id="simTabs">
+          <button class="sim-tab active" data-tab="pressure">Pressure profile</button>
+          <button class="sim-tab" data-tab="friction">Friction factor</button>
+          <button class="sim-tab" data-tab="ztable">Compressibility Z(P)</button>
+          <button class="sim-tab" data-tab="velocity">Local velocity</button>
+          <button class="sim-tab" data-tab="density">Local density</button>
+        </div>
+        <div class="chart-wrap">
+          <canvas class="chart" id="simCanvas"></canvas>
+          <div class="chart-tip" id="chartTip"></div>
+        </div>
+
+        <div class="sim-stats">
+          <div class="stat"><div class="k">Z at inlet</div><div class="v" id="st_z">—</div></div>
+          <div class="stat"><div class="k">ρ at inlet</div><div class="v" id="st_rho">—</div></div>
+          <div class="stat"><div class="k">Re at inlet</div><div class="v" id="st_re">—</div></div>
+          <div class="stat"><div class="k">Mass flow</div><div class="v" id="st_mf">—</div></div>
+          <div class="stat"><div class="k">Flow rate</div><div class="v" id="st_q">—</div></div>
+          <div class="stat"><div class="k">Model agreement</div><div class="v red" id="st_verdict">—</div></div>
+        </div>
+
+        <table class="sim-table">
+          <thead>
+            <tr><th>Parameter (full pipeline, at outlet)</th><th>DW (Colebrook-White)</th><th>AGA (fully-turbulent)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Outlet pressure (bar)</td><td id="t_pout_dw">—</td><td id="t_pout_aga">—</td></tr>
+            <tr><td>Pressure loss (bar)</td><td id="t_loss_dw">—</td><td id="t_loss_aga">—</td></tr>
+            <tr><td>Friction factor</td><td id="t_f_dw">—</td><td id="t_f_aga">—</td></tr>
+            <tr><td>Compression stations</td><td id="t_sta_dw">—</td><td id="t_sta_aga">—</td></tr>
+            <tr><td>Model deviation</td><td></td><td id="t_dev">—</td></tr>
+          </tbody>
+        </table>
+        <p class="sim-note">DW integrates Darcy-Weisbach friction loss segment-by-segment with a Reynolds-dependent Colebrook-White factor; a compression station resets the pressure to inlet whenever it drops below the trigger. AGA uses a fixed fully-turbulent friction factor baked into its transmission constant K. Both share the same tabulated Z(P) compressibility factor (50–120 bar, linearly interpolated; clamped outside that range) and equation of state, so the comparison isolates the effect of the friction model. Compressibility table sourced from external reference data — a known non-physical dip appears between 80–90 bar (Z falls before rising again), a quirk of the source table rather than my model, kept as-supplied for transparency.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PUBLICATIONS ═══ -->
+<section id="publications">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="sec-label">05 · Publications</div>
+      <h2 class="sec-title">Research output.</h2>
+    </div>
+    <div class="pub-list">
+      <div class="pub reveal">
+        <div class="pub-year">2026</div>
+        <div>
+          <h3>Study, Modelling and Computing of Pressure Losses in GH₂ Pipelines</h3>
+          <div class="venue">Bambore, Hendrick &amp; Ponthot · MDPI Energies 19(4), 885 · Selected Papers from SDEWES 2025</div>
+        </div>
+        <a class="pub-link" href="https://doi.org/10.3390/en19040885" target="_blank" rel="noopener">DOI ↗</a>
+      </div>
+      <div class="pub reveal">
+        <div class="pub-year">2025</div>
+        <div>
+          <h3>Study, Modelling and Computing of Pressure Losses in GH₂ Pipelines</h3>
+          <div class="venue">Bambore, Hendrick &amp; Ponthot · Proceedings of the 20th SDEWES Conference · Paper SDEWES2025.0946, pp. 1–9</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRESENTATIONS & ACTIVITIES ═══ -->
+<section id="presentations" class="alt">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="sec-label">06 · Presentations</div>
+      <h2 class="sec-title">Talks, posters &amp; PhD activities.</h2>
+    </div>
+    <div class="pres-grid reveal">
+      <div class="pres-col">
+        <h4>Oral</h4>
         <ul>
-          <li>Tested validation rules, workflow rules, and approval processes for new tasks, field updates, and email alerts against application requirements.</li>
-          <li>Created and customized users; tested security and sharing rules across different user profiles.</li>
-          <li>Built reports and dashboards to specification for business stakeholders.</li>
-          <li>Ran unit and regression tests on applications and individual modules.</li>
-          <li>Maintained Salesforce scopes — users, roles, profiles, groups, record types.</li>
-          <li>Prepared test-cycle and progress reports, defect metrics, and risk analysis using Azure DevOps; applied BDD practices where possible.</li>
+          <li><strong>20th SDEWES 2025 Conference</strong>Sustainable Development of Energy, Water and Environment Systems</li>
+          <li><strong>PhD Day, ULB Brussels</strong>2025</li>
         </ul>
-        <div class="tags"><span class="tag">Salesforce</span><span class="tag">Azure DevOps</span><span class="tag">BDD</span><span class="tag">QA</span></div>
+      </div>
+      <div class="pres-col">
+        <h4>Poster</h4>
+        <ul>
+          <li><strong>Study, Modelling and Computing of Pressure Losses in GH₂ Pipelines</strong>ULB Brussels · 2025</li>
+          <li><strong>Study, Modelling and Computing of Pressure Losses in GH₂ Pipelines</strong>Grenoble, France · 2025</li>
+        </ul>
       </div>
     </div>
-  </section>
 
-  <!-- PUBLICATIONS -->
-  <section id="publications" class="section-has-joint reveal">
-    <div class="joint" style="top:40px;"></div>
-    <div class="section-head">
-      <span class="section-num mono">04</span>
-      <h2 class="section-title">Publications</h2>
-      <span class="section-sub">OPENS IN NEW TAB</span>
+    <div class="timeline reveal">
+      <div class="tl-row"><div class="date">Feb 2025</div><div class="what">Grenoble Energy Conversion &amp; Storage — ENGINE2025</div></div>
+      <div class="tl-row"><div class="date">Oct 2025</div><div class="what">20th SDEWES 2025 Conference</div></div>
+      <div class="tl-row"><div class="date">Feb 2026</div><div class="what">Journal publication — MDPI Energies</div></div>
+      <div class="tl-row"><div class="date">Jan – Sep 2026</div><div class="what">University Certificate in Hydrogen Applications and Technologies</div></div>
+      <div class="tl-row"><div class="date">Jan 2026</div><div class="what">Managing your research project: planning, goals, and time</div></div>
+      <div class="tl-row"><div class="date">Mar 2026</div><div class="what">Hydrogen Hiveminds Hackathon</div></div>
+      <div class="tl-row"><div class="date">Apr 2026</div><div class="what">PhD and Career Development training</div></div>
+      <div class="tl-row"><div class="date">May 2026</div><div class="what">World Hydrogen Awards</div></div>
+      <div class="tl-row"><div class="date">Jun 2026</div><div class="what">EPHyC Conference</div></div>
     </div>
-    <div class="doc-list">
-      <a class="doc hoverable" href="https://doi.org/10.3390/en19040885" target="_blank" rel="noopener">
-        <div class="doc-icon">DOI</div>
-        <div class="doc-body">
-          <div class="doc-title">Study, Modelling and Computing of Pressure Losses in GH2 Pipelines</div>
-          <div class="doc-meta">Bambore, Hendrick, Ponthot — MDPI Energies 2026, 19(4), 885 · doi.org/10.3390/en19040885</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-      <div class="doc disabled">
-        <div class="doc-icon">PDF</div>
-        <div class="doc-body">
-          <div class="doc-title">Study, Modelling and Computing of Pressure Losses in GH2 Pipelines</div>
-          <div class="doc-meta">Proceedings of the 20th SDEWES Conference — SDEWES2025.0946, pp. 1–9 · no public link yet</div>
-        </div>
-        <div class="doc-arrow">—</div>
-      </div>
-    </div>
-    <div class="note">To link the SDEWES proceedings paper, drop the PDF into /documents/publications/ and swap the disabled row's href — see the guide at the bottom of this page.</div>
-  </section>
+  </div>
+</section>
 
-  <!-- PRESENTATIONS -->
-  <section id="presentations" class="section-has-joint reveal">
-    <div class="joint" style="top:40px;"></div>
-    <div class="section-head">
-      <span class="section-num mono">05</span>
-      <h2 class="section-title">Presentations &amp; Community</h2>
+<!-- ═══ CERTIFICATES ═══ -->
+<section id="certificates">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="sec-label">07 · Certificates</div>
+      <h2 class="sec-title">Documents &amp; certificates.</h2>
+      <p class="sec-sub">All files open in a new tab. Add each PDF to the repository root with the exact filename shown below.</p>
     </div>
-    <div class="pres-grid">
-      <div class="pres-card">
-        <div class="pres-kind mono">Oral</div>
-        <p>20th SDEWES Conference on Sustainable Development of Energy, Water and Environment Systems, 2025</p>
+    <div class="cert-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon">CV</div>
+        <h4>Full curriculum vitae</h4>
+        <div class="meta">PDF</div>
+        <a href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="pres-card">
-        <div class="pres-kind mono">Oral</div>
-        <p>PhD Day, Université Libre de Bruxelles, 2025</p>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>Certificate of Attendance — EPHyC 2026</h4>
+        <div class="meta">PDF</div>
+        <a href="Certificate of attendance EPHyC2026.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="pres-card">
-        <div class="pres-kind mono">Poster</div>
-        <p>Pressure Losses in GH2 Pipelines — ULB Brussels, 2025</p>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>Certificate of Attendance — ENGINE 2025</h4>
+        <div class="meta">PDF</div>
+        <a href="Certificate of attendance_ENGINE2025.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="pres-card">
-        <div class="pres-kind mono">Poster</div>
-        <p>Pressure Losses in GH2 Pipelines — Grenoble, France, 2025</p>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>Certificate of Poster Session — ENGINE 2025</h4>
+        <div class="meta">PDF</div>
+        <a href="Certificate of poster session_ENGINE2025.pdf" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>Hydrogen Hiveminds Hackathon Certificates</h4>
+        <div class="meta">PDF</div>
+        <a href="HH_certificates_AkshayB.pdf" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>Managing Your Research Project: Planning, Goals and Time</h4>
+        <div class="meta">PDF · verify exact filename</div>
+        <a href="Managing Research Project, Planning goals and time.pdf" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>PhD OOC Certificate — Just MOOCit</h4>
+        <div class="meta">PDF</div>
+        <a href="PhDOOC Certificate Just MOOCit.pdf" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>SDEWES 2025 — Certificate of Attendance</h4>
+        <div class="meta">PDF · verify exact filename</div>
+        <a href="SDEWES2025_Certificate_of_Attendance_ONSITE.pdf" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">◆</div>
+        <h4>SDEWES 2025 — Certificate of Presentation</h4>
+        <div class="meta">PDF · verify exact filename</div>
+        <a href="SDEWES2025_Certificate_of_Presentation_ONSITE.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
     </div>
-    <div class="note" style="margin-top:18px;">Member, <a class="hoverable" style="color:var(--text-muted);border-bottom:1px solid var(--hairline);" href="https://brite-research.be/akshay-bambore" target="_blank" rel="noopener">Brussels Institute for Thermal-fluid systems and clean Energy (BRITE) ↗</a></div>
-  </section>
+  </div>
+</section>
 
-  <!-- CERTIFICATES -->
-  <section id="certificates" class="section-has-joint reveal">
-    <div class="joint" style="top:40px;"></div>
-    <div class="section-head">
-      <span class="section-num mono">06</span>
-      <h2 class="section-title">Training &amp; Certificates</h2>
-      <span class="section-sub">OPENS IN NEW TAB</span>
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" class="alt">
+  <div class="container contact-wrap">
+    <div class="sec-label reveal">08 · Contact</div>
+    <h2 class="contact-big reveal">Let's talk pipelines<br /><span class="grad">— or PhD collaboration.</span></h2>
+    <p class="lede reveal">Research collaboration, questions about GH₂ pipeline modelling, or the simulator above — my inbox is open.</p>
+    <div class="contact-links reveal">
+      <a href="mailto:akshay.bambore@ulb.be" class="btn btn-primary">akshay.bambore@ulb.be</a>
+      <a href="tel:+32497751365" class="btn btn-outline">+32 497 75 13 65</a>
+      <a href="https://brite-research.be/akshay-bambore" target="_blank" rel="noopener" class="btn btn-outline">BRITE research group</a>
     </div>
-    <div class="doc-list">
-      <a class="doc hoverable" href="documents/certificates/hydrogen-applications-technologies.pdf" target="_blank" rel="noopener">
-        <div class="doc-icon">CERT</div>
-        <div class="doc-body">
-          <div class="doc-title">University Certificate in Hydrogen Applications and Technologies</div>
-          <div class="doc-meta">16 Jan – 11 Sept 2026</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-      <a class="doc hoverable" href="documents/certificates/managing-research-project.pdf" target="_blank" rel="noopener">
-        <div class="doc-icon">CERT</div>
-        <div class="doc-body">
-          <div class="doc-title">Managing Your Research Project: Planning, Goals and Time</div>
-          <div class="doc-meta">29 Jan 2026</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-      <a class="doc hoverable" href="documents/certificates/hydrogen-hiveminds-hackathon.pdf" target="_blank" rel="noopener">
-        <div class="doc-icon">CERT</div>
-        <div class="doc-body">
-          <div class="doc-title">Hydrogen Hiveminds Hackathon</div>
-          <div class="doc-meta">18–20 March 2026</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-      <a class="doc hoverable" href="documents/certificates/phd-career-development.pdf" target="_blank" rel="noopener">
-        <div class="doc-icon">CERT</div>
-        <div class="doc-body">
-          <div class="doc-title">PhD and Career Development Training</div>
-          <div class="doc-meta">29 April 2026</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-      <a class="doc hoverable" href="documents/certificates/engine2025.pdf" target="_blank" rel="noopener">
-        <div class="doc-icon">CERT</div>
-        <div class="doc-body">
-          <div class="doc-title">Grenoble Energy Conversion &amp; Storage — ENGINE 2025</div>
-          <div class="doc-meta">24–28 February 2025</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-      <a class="doc hoverable" href="documents/certificates/world-hydrogen-awards.pdf" target="_blank" rel="noopener">
-        <div class="doc-icon">CERT</div>
-        <div class="doc-body">
-          <div class="doc-title">World Hydrogen Awards</div>
-          <div class="doc-meta">19 May 2026</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-      <a class="doc hoverable" href="documents/certificates/ephyc-conference.pdf" target="_blank" rel="noopener">
-        <div class="doc-icon">CERT</div>
-        <div class="doc-body">
-          <div class="doc-title">EpHyC Conference</div>
-          <div class="doc-meta">1–3 June 2026</div>
-        </div>
-        <div class="doc-arrow">↗</div>
-      </a>
-    </div>
-    <div class="note">These links point to files that don't exist yet. Add the matching PDFs to /documents/certificates/ using the exact filenames above and they go live — no code changes needed.</div>
-  </section>
+  </div>
+</section>
 
-  <!-- CONTACT -->
-  <footer id="contact" class="section-has-joint reveal">
-    <div class="joint" style="top:40px;"></div>
-    <div class="section-head">
-      <span class="section-num mono">07</span>
-      <h2 class="section-title">Get in touch</h2>
-    </div>
-    <h3 class="contact-title">Working on hydrogen infrastructure, CFD, or pipeline integrity? Let's talk.</h3>
-    <div class="contact-row">
-      <a class="hoverable" href="mailto:akshay.bambore@ulb.be">akshay.bambore@ulb.be ↗</a>
-      <a class="hoverable" href="tel:+32497751365">+32 497 75 13 65</a>
-      <a class="hoverable" href="https://brite-research.be/akshay-bambore" target="_blank" rel="noopener">BRITE profile ↗</a>
-      <a class="hoverable" href="documents/cv.pdf" target="_blank" rel="noopener">Full CV (PDF) ↗</a>
-    </div>
-    <div class="foot-meta">
-      <span>© 2026 Akshay Bambore — Brussels, Belgium</span>
-      <span>ULB · Dept. of Aero-Thermo-Mechanics</span>
-    </div>
-  </footer>
-</main>
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div>© 2026 Akshay Bambore · Dept. of Aero-Thermo-Mechanics, ULB</div>
+  <div>Hosted on <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a></div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">↑</button>
 
 <script>
-  // custom cursor
-  const reticle = document.getElementById('reticle');
-  const dot = document.getElementById('cursor-dot');
-  window.addEventListener('mousemove', (e)=>{
-    reticle.style.left = e.clientX + 'px';
-    reticle.style.top = e.clientY + 'px';
-    dot.style.left = e.clientX + 'px';
-    dot.style.top = e.clientY + 'px';
-  });
-  document.querySelectorAll('a, .hoverable, button').forEach(el=>{
-    el.addEventListener('mouseenter', ()=> reticle.classList.add('hover'));
-    el.addEventListener('mouseleave', ()=> reticle.classList.remove('hover'));
-  });
+(function(){
+'use strict';
+const motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // reveal on scroll
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
-  }, {threshold:0.12});
-  document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+/* ── Mobile menu ─────────────────────────────────────────── */
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); hamburger.classList.toggle('open'); });
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { navLinks.classList.remove('open'); hamburger.classList.remove('open'); }));
 
-  // pressure gauge animation — sweeps to a value on load, tied to the actual research subject
-  const arc = document.getElementById('gaugeArc');
-  const needle = document.getElementById('needle');
-  const valueEl = document.getElementById('gaugeValue');
-  const maxDash = 157;
-  let target = 0.62; // decorative fraction
-  let current = 0;
-  function animateGauge(){
-    current += (target - current) * 0.06;
-    arc.setAttribute('stroke-dashoffset', maxDash - (maxDash*current));
-    const angle = -90 + (current*180);
-    needle.setAttribute('x2', 60 + 38*Math.sin(angle*Math.PI/180));
-    needle.setAttribute('y2', 65 - 38*Math.cos(angle*Math.PI/180));
-    valueEl.textContent = (current*350).toFixed(1) + ' mbar/km';
-    requestAnimationFrame(animateGauge);
+/* ── Ticker loop ──────────────────────────────────────────── */
+const ticker = document.getElementById('ticker');
+ticker.innerHTML += ticker.innerHTML;
+
+/* ── Scroll reveal ────────────────────────────────────────── */
+document.querySelectorAll('.stack,.runlog,.edu-grid,.pub-list,.pres-grid,.timeline,.cert-grid,.about-grid').forEach(parent=>{
+  [...parent.children].forEach((child,i)=>{ if(child.classList.contains('reveal')) child.style.transitionDelay = Math.min(i*70,380)+'ms'; });
+});
+const revealObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+/* ── Nav scroll state + section spy ──────────────────────── */
+const nav = document.getElementById('nav');
+const toTop = document.getElementById('toTop');
+function onScroll(){
+  const y = window.scrollY;
+  nav.classList.toggle('scrolled', y>30);
+  toTop.classList.toggle('show', y>600);
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+toTop.addEventListener('click', ()=> window.scrollTo({top:0, behavior: motionOK?'smooth':'auto'}));
+
+const linkFor = {};
+navLinks.querySelectorAll('a[href^="#"]').forEach(a=>{ linkFor[a.getAttribute('href').slice(1)] = a; });
+const spy = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    navLinks.querySelectorAll('a').forEach(a=>a.classList.remove('active'));
+    const link = linkFor[e.target.id];
+    if(link) link.classList.add('active');
+  });
+},{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
+
+/* ═══════════════════════════════════════════════════════════
+   HERO FIELD — a live pipeline pressure-decay visualisation.
+   x = distance along the (unwrapped) pipe, colour = local
+   pressure. Pressure decays smoothly from a compressor station
+   (deep red, high pressure) toward the next station, where it
+   is boosted back up — a sawtooth decay repeated periodically,
+   exactly the physics the pressure-loss model below computes.
+   ═══════════════════════════════════════════════════════════ */
+const canvas = document.getElementById('pipeField');
+const hero = document.getElementById('hero');
+const ctx = canvas.getContext('2d');
+const stops = [
+  [0.00, 255,255,255],[0.30, 252,222,222],[0.55, 240,150,150],
+  [0.78, 210, 70, 80],[1.00, 142, 16, 41]
+];
+const LUT = new Uint8Array(256*3);
+for(let i=0;i<256;i++){
+  const v=i/255; let k=1; while(k<stops.length-1 && stops[k][0]<v) k++;
+  const a=stops[k-1], b=stops[k]; const f=(v-a[0])/(b[0]-a[0]||1);
+  LUT[i*3]=a[1]+(b[1]-a[1])*f; LUT[i*3+1]=a[2]+(b[2]-a[2])*f; LUT[i*3+2]=a[3]+(b[3]-a[3])*f;
+}
+let GW=0,GH=0,off,offCtx,img,running=false,raf=null,t=0;
+const CELL=6;
+const mouse={x:-1,y:-1,heat:0};
+function resize(){
+  const W=hero.clientWidth,H=hero.clientHeight;
+  canvas.width=W; canvas.height=H;
+  GW=Math.max(50,Math.round(W/CELL)); GH=Math.max(30,Math.round(H/CELL));
+  off=document.createElement('canvas'); off.width=GW; off.height=GH;
+  offCtx=off.getContext('2d'); img=offCtx.createImageData(GW,GH);
+  if(!motionOK) drawFrame(0);
+}
+function drawFrame(time){
+  const d=img.data;
+  const cycles=3.4;
+  const drift=(time*0.045)%1;
+  const mx=mouse.x/canvas.width, my=mouse.y/canvas.height;
+  for(let j=0;j<GH;j++){
+    const yn=j/GH;
+    for(let i=0;i<GW;i++){
+      const xn=i/GW;
+      let pos=(xn*cycles - drift)%1; if(pos<0) pos+=1;
+      let v = Math.exp(-pos*2.2);
+      v += 0.05*Math.sin(xn*38 + time*0.6)*Math.cos(yn*13 - time*0.4);
+      if(mouse.heat>0.01){
+        const dx=xn-mx, dy=yn-my;
+        v += mouse.heat*Math.exp(-(dx*dx*40+dy*dy*22)*8);
+      }
+      const c=Math.max(0,Math.min(255,v*255))|0;
+      const p=(j*GW+i)*4;
+      d[p]=LUT[c*3]; d[p+1]=LUT[c*3+1]; d[p+2]=LUT[c*3+2]; d[p+3]=255;
+    }
   }
-  animateGauge();
+  offCtx.putImageData(img,0,0);
+  ctx.imageSmoothingEnabled=true;
+  ctx.drawImage(off,0,0,canvas.width,canvas.height);
+}
+function loop(){ if(!running) return; t+=0.016; mouse.heat*=0.94; drawFrame(t); raf=requestAnimationFrame(loop); }
+function setRunning(on){ on=on&&motionOK&&!document.hidden; if(on&&!running){running=true;loop();} else if(!on&&running){running=false; if(raf) cancelAnimationFrame(raf);} }
+hero.addEventListener('pointermove', e=>{
+  const r=canvas.getBoundingClientRect();
+  mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top;
+  mouse.heat=Math.min(1,mouse.heat+0.16);
+},{passive:true});
+new IntersectionObserver(([e])=>setRunning(e.isIntersecting)).observe(hero);
+document.addEventListener('visibilitychange', ()=>setRunning(!document.hidden));
+let rt; window.addEventListener('resize', ()=>{ clearTimeout(rt); rt=setTimeout(resize,150); });
+resize(); setRunning(true);
+
+/* ═══════════════════════════════════════════════════════════
+   PIPELINE PRESSURE-LOSS PHYSICS
+   Direct port of Animation_updated.py — Darcy-Weisbach (DW) vs
+   AGA fully-turbulent comparison, shared tabulated Z(P).
+   ═══════════════════════════════════════════════════════════ */
+const TEMPERATURE=303.15, TSTD=288.65, PSTD=101325.0, R_SPEC=4124.0;
+const GAMMA_SG=2.016/28.96, MU_H2=9.0e-6, NUM_SEG=500;
+const Z_TABLE={50:1.0349,60:1.0423,70:1.0498,80:1.0574,90:1.0651,100:1.0729,110:1.0808,120:1.0889};
+const Z_KEYS=Object.keys(Z_TABLE).map(Number).sort((a,b)=>a-b);
+
+function Zfn(P_pa){
+  const p_bar=P_pa/1e5;
+  if(p_bar<=Z_KEYS[0]) return Z_TABLE[Z_KEYS[0]];
+  if(p_bar>=Z_KEYS[Z_KEYS.length-1]) return Z_TABLE[Z_KEYS[Z_KEYS.length-1]];
+  for(let i=0;i<Z_KEYS.length-1;i++){
+    const x0=Z_KEYS[i], x1=Z_KEYS[i+1];
+    if(x0<=p_bar && p_bar<=x1){ const y0=Z_TABLE[x0], y1=Z_TABLE[x1]; return y0+(p_bar-x0)*(y1-y0)/(x1-x0); }
+  }
+  return Z_TABLE[Z_KEYS[Z_KEYS.length-1]];
+}
+function rhoFn(P_pa){ return P_pa/(Zfn(P_pa)*R_SPEC*TEMPERATURE); }
+function colebrook(Re,eps,D){
+  if(Re<2300) return 64.0/Re;
+  let f=0.02;
+  for(let i=0;i<50;i++){
+    const term=eps/(3.7*D)+2.51/(Re*Math.sqrt(f));
+    const fn=1.0/Math.pow(-2.0*Math.log10(term),2);
+    if(Math.abs(fn-f)<1e-10) break;
+    f=fn;
+  }
+  return f;
+}
+function fFullyTurbulent(D,eps){ return 1.0/Math.pow(4.0*Math.log10(3.7*D/eps),2); }
+function agaK(D,eps){ return 0.018*(288.65/101.325)*4.0*Math.log10(3.7*D/eps)*Math.pow(D*1000,2.5); }
+
+function runModels(p_inlet_bar,v_inlet,diameter,length_km,epsilon_mm,p_compress_bar){
+  const length_m=length_km*1000.0, epsilon_m=epsilon_mm/1000.0, dx=length_m/NUM_SEG;
+  const area=Math.PI*Math.pow(diameter/2.0,2);
+  const p_inlet_pa=p_inlet_bar*1e5, p_comp_pa=p_compress_bar*1e5;
+  const Z_in=Zfn(p_inlet_pa), rho_in=rhoFn(p_inlet_pa), mass_flow=rho_in*area*v_inlet;
+  const rho_std=PSTD/(1.0*R_SPEC*TSTD), Q_day=mass_flow/rho_std*86400.0;
+  const K=agaK(diameter,epsilon_m);
+  const x_km=Array.from({length:NUM_SEG+1},(_,i)=>i*length_km/NUM_SEG);
+  const Re_in=rho_in*v_inlet*diameter/MU_H2;
+  const f_cw=colebrook(Re_in,epsilon_m,diameter), f_ft=fFullyTurbulent(diameter,epsilon_m);
+
+  const P_dw=new Array(NUM_SEG+1).fill(NaN), V_dw=new Array(NUM_SEG+1).fill(NaN);
+  const Rho_dw=new Array(NUM_SEG+1).fill(NaN);
+  P_dw[0]=p_inlet_pa; V_dw[0]=v_inlet; Rho_dw[0]=rho_in;
+  const sta_dw=[]; let p_cur=p_inlet_pa, last_dw=0;
+  for(let i=0;i<NUM_SEG;i++){
+    const r=rhoFn(p_cur), v=mass_flow/(r*area);
+    const Re=r*v*diameter/MU_H2;
+    const f=colebrook(Re,epsilon_m,diameter);
+    const dP=f*(dx/diameter)*r*v*v/2.0;
+    const Pn=p_cur-dP;
+    if(Pn<=1e5) break;
+    p_cur=Pn;
+    if(p_cur<p_comp_pa){ sta_dw.push((i+1)*dx/1000.0); p_cur=p_inlet_pa; }
+    P_dw[i+1]=p_cur;
+    const dens=rhoFn(p_cur);
+    V_dw[i+1]=mass_flow/(dens*area); Rho_dw[i+1]=dens;
+    last_dw=i+1;
+  }
+
+  const P_aga=new Array(NUM_SEG+1).fill(NaN), V_aga=new Array(NUM_SEG+1).fill(NaN);
+  const Rho_aga=new Array(NUM_SEG+1).fill(NaN);
+  P_aga[0]=p_inlet_pa; V_aga[0]=v_inlet; Rho_aga[0]=rho_in;
+  const sta_aga=[]; p_cur=p_inlet_pa; let last_aga=0;
+  for(let i=0;i<NUM_SEG;i++){
+    const dpsq=Math.pow(Q_day/K,2)*(GAMMA_SG*dx*TEMPERATURE*Zfn(p_cur));
+    const p2sq=Math.pow(p_cur/1000.0,2)-dpsq;
+    if(p2sq<=0) break;
+    const Pn=Math.sqrt(p2sq)*1000.0;
+    p_cur=Pn;
+    if(p_cur<p_comp_pa){ sta_aga.push((i+1)*dx/1000.0); p_cur=p_inlet_pa; }
+    P_aga[i+1]=p_cur;
+    const dens=rhoFn(p_cur);
+    V_aga[i+1]=mass_flow/(dens*area); Rho_aga[i+1]=dens;
+    last_aga=i+1;
+  }
+
+  return {
+    x_km,
+    P_dw:P_dw.map(v=>v/1e5), P_aga:P_aga.map(v=>v/1e5),
+    V_dw, V_aga, Rho_dw, Rho_aga,
+    P_out_dw:P_dw[last_dw]/1e5, P_out_aga:P_aga[last_aga]/1e5,
+    loss_dw:p_inlet_bar-P_dw[last_dw]/1e5, loss_aga:p_inlet_bar-P_aga[last_aga]/1e5,
+    sta_dw, sta_aga, Z_in, rho_in, Re_in, f_cw, f_ft, mass_flow,
+    Q_MMSCFD: Q_day/(1e6*0.0283168), p_inlet_bar, p_compress_bar
+  };
+}
+
+/* ── UI wiring ─────────────────────────────────────────────── */
+const S = {
+  pressure: document.getElementById('s_pressure'),
+  velocity: document.getElementById('s_velocity'),
+  diameter: document.getElementById('s_diameter'),
+  length: document.getElementById('s_length'),
+  roughness: document.getElementById('s_roughness'),
+  compress: document.getElementById('s_compress'),
+};
+const L = {
+  pressure: document.getElementById('lbl_pressure'),
+  velocity: document.getElementById('lbl_velocity'),
+  diameter: document.getElementById('lbl_diameter'),
+  length: document.getElementById('lbl_length'),
+  roughness: document.getElementById('lbl_roughness'),
+  compress: document.getElementById('lbl_compress'),
+};
+const DEFAULTS = {pressure:90, velocity:10, diameter:0.9, length:500, roughness:0.0462, compress:30};
+
+function getParams(){
+  return [
+    parseFloat(S.pressure.value), parseFloat(S.velocity.value), parseFloat(S.diameter.value),
+    parseFloat(S.length.value), parseFloat(S.roughness.value), parseFloat(S.compress.value)
+  ];
+}
+function updateLabels(){
+  L.pressure.textContent = parseFloat(S.pressure.value).toFixed(0)+' bar';
+  L.velocity.textContent = parseFloat(S.velocity.value).toFixed(3)+' m/s';
+  L.diameter.textContent = parseFloat(S.diameter.value).toFixed(3)+' m';
+  L.length.textContent = parseFloat(S.length.value).toFixed(2)+' km';
+  L.roughness.textContent = parseFloat(S.roughness.value).toFixed(4)+' mm';
+  L.compress.textContent = parseFloat(S.compress.value).toFixed(0)+' bar';
+}
+
+let currentTab='pressure';
+let lastRes=null;
+
+const simCanvas = document.getElementById('simCanvas');
+const cctx = simCanvas.getContext('2d');
+const chartTip = document.getElementById('chartTip');
+let dpr = Math.max(1, window.devicePixelRatio||1);
+let lastChartConfig = null;
+
+function resizeChart(){
+  const rect = simCanvas.getBoundingClientRect();
+  dpr = Math.max(1, window.devicePixelRatio||1);
+  simCanvas.width = Math.round(rect.width*dpr);
+  simCanvas.height = Math.round(rect.height*dpr);
+  cctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+function niceStep(range){
+  const rough = range/5;
+  const mag = Math.pow(10, Math.floor(Math.log10(rough||1)));
+  const norm = rough/mag;
+  let step;
+  if(norm<1.5) step=1; else if(norm<3) step=2; else if(norm<7) step=5; else step=10;
+  return step*mag;
+}
+
+function drawChart(config){
+  lastChartConfig = config;
+  const rect = simCanvas.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  cctx.clearRect(0,0,W,H);
+  const padL=54, padR=18, padT=26, padB=38;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+
+  let allY=[];
+  config.series.forEach(s=> s.ys.forEach(v=>{ if(!isNaN(v)) allY.push(v); }));
+  if(config.hline!==undefined) allY.push(config.hline);
+  if(allY.length===0) allY=[0,1];
+  let yMin=Math.min(...allY), yMax=Math.max(...allY);
+  if(yMin===yMax){ yMin-=1; yMax+=1; }
+  const pad=(yMax-yMin)*0.1; yMin-=pad; yMax+=pad;
+
+  const xs = config.xs;
+  const xMin = config.xLog ? Math.log10(xs[0]) : xs[0];
+  const xMax = config.xLog ? Math.log10(xs[xs.length-1]) : xs[xs.length-1];
+
+  function xPix(v){ const vv = config.xLog?Math.log10(v):v; return padL + (vv-xMin)/(xMax-xMin||1)*plotW; }
+  function yPix(v){ return padT + (1-(v-yMin)/(yMax-yMin||1))*plotH; }
+
+  // grid + axes
+  cctx.strokeStyle='rgba(255,255,255,.08)'; cctx.lineWidth=1;
+  cctx.fillStyle='#9EA3AB'; cctx.font='10px "IBM Plex Mono",monospace'; cctx.textBaseline='middle';
+  const yStep = niceStep(yMax-yMin);
+  for(let v=Math.ceil(yMin/yStep)*yStep; v<=yMax; v+=yStep){
+    const py=yPix(v);
+    cctx.beginPath(); cctx.moveTo(padL,py); cctx.lineTo(W-padR,py); cctx.stroke();
+    cctx.textAlign='right'; cctx.fillText(fmtAxis(v), padL-8, py);
+  }
+  cctx.textAlign='center'; cctx.textBaseline='top';
+  const xTicks=6;
+  for(let i=0;i<=xTicks;i++){
+    const frac=i/xTicks;
+    const v = config.xLog ? Math.pow(10, xMin+frac*(xMax-xMin)) : xs[0]+frac*(xs[xs.length-1]-xs[0]);
+    const px=xPix(v);
+    cctx.fillText(fmtAxis(v), px, H-padB+8);
+  }
+  cctx.strokeStyle='rgba(255,255,255,.18)';
+  cctx.beginPath(); cctx.moveTo(padL,padT); cctx.lineTo(padL,H-padB); cctx.lineTo(W-padR,H-padB); cctx.stroke();
+
+  if(config.hline!==undefined){
+    cctx.strokeStyle='rgba(255,107,129,.55)'; cctx.setLineDash([5,4]); cctx.lineWidth=1;
+    const py=yPix(config.hline);
+    cctx.beginPath(); cctx.moveTo(padL,py); cctx.lineTo(W-padR,py); cctx.stroke();
+    cctx.setLineDash([]);
+    cctx.fillStyle='#ff6b81'; cctx.textAlign='left'; cctx.textBaseline='bottom';
+    cctx.fillText(config.hlineLabel||'', padL+6, py-3);
+  }
+
+  // series
+  config.series.forEach(s=>{
+    cctx.strokeStyle=s.color; cctx.lineWidth=2;
+    if(s.dash) cctx.setLineDash(s.dash); else cctx.setLineDash([]);
+    cctx.beginPath();
+    let started=false;
+    for(let i=0;i<xs.length;i++){
+      const yv=s.ys[i];
+      if(isNaN(yv)){ started=false; continue; }
+      const px=xPix(xs[i]), py=yPix(yv);
+      if(!started){ cctx.moveTo(px,py); started=true; } else { cctx.lineTo(px,py); }
+    }
+    cctx.stroke();
+    cctx.setLineDash([]);
+  });
+
+  // station markers
+  if(config.markersDw){
+    config.markersDw.forEach(xv=>{
+      const px=xPix(xv);
+      cctx.strokeStyle='rgba(255,255,255,.25)'; cctx.setLineDash([2,3]);
+      cctx.beginPath(); cctx.moveTo(px,padT); cctx.lineTo(px,H-padB); cctx.stroke(); cctx.setLineDash([]);
+      cctx.fillStyle=config.dwColor||'#C81E3A';
+      cctx.beginPath(); cctx.moveTo(px,padT+6); cctx.lineTo(px-5,padT+14); cctx.lineTo(px+5,padT+14); cctx.closePath(); cctx.fill();
+    });
+  }
+  if(config.markersAga){
+    config.markersAga.forEach(xv=>{
+      const px=xPix(xv);
+      cctx.fillStyle=config.agaColor||'#fff';
+      cctx.beginPath(); cctx.moveTo(px,H-padB-6); cctx.lineTo(px-5,H-padB-14); cctx.lineTo(px+5,H-padB-14); cctx.closePath(); cctx.fill();
+    });
+  }
+
+  // legend
+  let lx=padL+4;
+  cctx.font='10px "IBM Plex Mono",monospace'; cctx.textBaseline='alphabetic'; cctx.textAlign='left';
+  config.series.forEach(s=>{
+    cctx.fillStyle=s.color;
+    cctx.fillRect(lx,padT-16,10,3);
+    cctx.fillStyle='#B8BCC3';
+    cctx.fillText(s.label, lx+14, padT-11);
+    lx += 14 + cctx.measureText(s.label).width + 18;
+  });
+
+  config._geom = {padL,padR,padT,padB,plotW,plotH,xMin,xMax,yMin,yMax,xPix,yPix};
+}
+
+function fmtAxis(v){
+  if(Math.abs(v)>=1000) return v.toFixed(0);
+  if(Math.abs(v)>=10) return v.toFixed(1);
+  if(Math.abs(v)>=1) return v.toFixed(2);
+  return v.toFixed(4);
+}
+
+function buildTooltipHandler(){
+  simCanvas.onmousemove = (e)=>{
+    if(!lastChartConfig) return;
+    const cfg=lastChartConfig;
+    const rect = simCanvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    const g=cfg._geom;
+    if(!g || mx<g.padL || mx>rect.width-g.padR || my<g.padT || my>rect.height-g.padB){
+      chartTip.style.opacity=0; return;
+    }
+    const frac=(mx-g.padL)/g.plotW;
+    const xVal = cfg.xLog ? Math.pow(10, g.xMin+frac*(g.xMax-g.xMin)) : cfg.xs[0]+frac*(cfg.xs[cfg.xs.length-1]-cfg.xs[0]);
+    let idx=0, bestD=Infinity;
+    cfg.xs.forEach((v,i)=>{ const d=Math.abs((cfg.xLog?Math.log10(v):v)-(cfg.xLog?Math.log10(xVal):xVal)); if(d<bestD){bestD=d; idx=i;} });
+    let lines=[`${cfg.xLabel}: ${fmtAxis(cfg.xs[idx])} ${cfg.xUnit||''}`];
+    cfg.series.forEach(s=>{
+      const yv=s.ys[idx];
+      if(!isNaN(yv)) lines.push(`${s.label}: ${fmtAxis(yv)} ${cfg.yUnit||''}`);
+    });
+    chartTip.textContent = lines.join('\n');
+    chartTip.style.left = Math.min(mx+14, rect.width-140)+'px';
+    chartTip.style.top = Math.max(my-10, 6)+'px';
+    chartTip.style.opacity=1;
+  };
+  simCanvas.onmouseleave = ()=>{ chartTip.style.opacity=0; };
+}
+buildTooltipHandler();
+
+function renderCurrentTab(){
+  if(!lastRes) return;
+  const res = lastRes;
+  resizeChart();
+  if(currentTab==='pressure'){
+    drawChart({
+      xs: res.x_km,
+      xLabel:'Distance', xUnit:'km', yUnit:'bar',
+      series:[
+        {ys:res.P_dw, color:'#C81E3A', label:'DW pressure'},
+        {ys:res.P_aga, color:'#ffffff', label:'AGA pressure'}
+      ],
+      hline: res.p_compress_bar, hlineLabel:`Compression trigger (${res.p_compress_bar.toFixed(0)} bar)`,
+      markersDw: res.sta_dw, markersAga: res.sta_aga,
+      dwColor:'#C81E3A', agaColor:'#ffffff'
+    });
+  } else if(currentTab==='friction'){
+    const eps_m = parseFloat(S.roughness.value)/1000.0;
+    const D = parseFloat(S.diameter.value);
+    const reLo=4, reHi=8;
+    const N=200;
+    const reArr=[], cwArr=[], ftArr=[];
+    for(let i=0;i<N;i++){
+      const logRe = reLo+(reHi-reLo)*i/(N-1);
+      const Re = Math.pow(10, logRe);
+      reArr.push(Re); cwArr.push(colebrook(Re,eps_m,D)); ftArr.push(fFullyTurbulent(D,eps_m));
+    }
+    drawChart({
+      xs: reArr, xLog:true, xLabel:'Reynolds number', yUnit:'',
+      series:[
+        {ys:cwArr, color:'#C81E3A', label:'Colebrook-White'},
+        {ys:ftArr, color:'#ffffff', label:'Fully-turbulent', dash:[6,4]}
+      ]
+    });
+  } else if(currentTab==='ztable'){
+    const N=300;
+    const pArr=[], zArr=[];
+    for(let i=0;i<N;i++){
+      const p = Z_KEYS[0] + (Z_KEYS[Z_KEYS.length-1]-Z_KEYS[0])*i/(N-1);
+      pArr.push(p); zArr.push(Zfn(p*1e5));
+    }
+    drawChart({
+      xs: pArr, xLabel:'Pressure', xUnit:'bar', yUnit:'',
+      series:[{ys:zArr, color:'#C81E3A', label:'Z(P) interpolated'}]
+    });
+  } else if(currentTab==='velocity'){
+    drawChart({
+      xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'m/s',
+      series:[
+        {ys:res.V_dw, color:'#C81E3A', label:'DW local velocity'},
+        {ys:res.V_aga, color:'#ffffff', label:'AGA local velocity'}
+      ]
+    });
+  } else if(currentTab==='density'){
+    drawChart({
+      xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'kg/m³',
+      series:[
+        {ys:res.Rho_dw, color:'#C81E3A', label:'DW local density'},
+        {ys:res.Rho_aga, color:'#ffffff', label:'AGA local density'}
+      ]
+    });
+  }
+}
+
+function updateStats(res){
+  document.getElementById('st_z').textContent = res.Z_in.toFixed(4);
+  document.getElementById('st_rho').textContent = res.rho_in.toFixed(3)+' kg/m³';
+  document.getElementById('st_re').textContent = res.Re_in.toExponential(2);
+  document.getElementById('st_mf').textContent = res.mass_flow.toFixed(2)+' kg/s';
+  document.getElementById('st_q').textContent = res.Q_MMSCFD.toFixed(1)+' MMSCFD';
+
+  const diff = Math.abs(res.loss_dw-res.loss_aga);
+  const diffPct = res.loss_dw ? diff/res.loss_dw*100 : 0;
+  const agree = diffPct<5;
+  const vEl = document.getElementById('st_verdict');
+  vEl.textContent = (agree?'AGREE':'DIVERGE')+' ('+diffPct.toFixed(1)+'%)';
+  vEl.className = 'v red';
+
+  document.getElementById('t_pout_dw').textContent = res.P_out_dw.toFixed(2);
+  document.getElementById('t_pout_aga').textContent = res.P_out_aga.toFixed(2);
+  document.getElementById('t_loss_dw').textContent = res.loss_dw.toFixed(4);
+  document.getElementById('t_loss_aga').textContent = res.loss_aga.toFixed(4);
+  document.getElementById('t_f_dw').textContent = res.f_cw.toFixed(5)+' (Re-dep.)';
+  document.getElementById('t_f_aga').textContent = res.f_ft.toFixed(5)+' (fixed)';
+  document.getElementById('t_sta_dw').textContent = res.sta_dw.length;
+  document.getElementById('t_sta_aga').textContent = res.sta_aga.length;
+  document.getElementById('t_dev').textContent = diffPct.toFixed(1)+'%';
+}
+
+let recalcTimer=null;
+function recalc(){
+  const [p,v,d,l,eps,pc] = getParams();
+  lastRes = runModels(p,v,d,l,eps,pc);
+  updateLabels();
+  updateStats(lastRes);
+  renderCurrentTab();
+}
+function scheduleRecalc(){ clearTimeout(recalcTimer); recalcTimer=setTimeout(recalc, 60); }
+
+Object.values(S).forEach(el=> el.addEventListener('input', scheduleRecalc));
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  S.pressure.value=DEFAULTS.pressure; S.velocity.value=DEFAULTS.velocity; S.diameter.value=DEFAULTS.diameter;
+  S.length.value=DEFAULTS.length; S.roughness.value=DEFAULTS.roughness; S.compress.value=DEFAULTS.compress;
+  recalc();
+});
+
+document.getElementById('simTabs').addEventListener('click', e=>{
+  const btn = e.target.closest('.sim-tab');
+  if(!btn) return;
+  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTab = btn.dataset.tab;
+  renderCurrentTab();
+});
+
+let rt2; window.addEventListener('resize', ()=>{ clearTimeout(rt2); rt2=setTimeout(renderCurrentTab,150); });
+updateLabels();
+recalc();
+
+})();
 </script>
 </body>
 </html>
