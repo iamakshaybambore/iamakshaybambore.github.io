@@ -8,321 +8,377 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Akshay Bambore — PhD Researcher, Hydrogen Pipeline Systems" />
 <meta property="og:description" content="Modelling pressure losses in GH2 pipelines — CFD, Darcy-Weisbach vs AGA comparison, hydrogen embrittlement degradation." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23C81E3A'/><text x='50' y='66' font-size='52' font-family='Arial' font-weight='700' fill='white' text-anchor='middle'>H2</text></svg>" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E01B3D'/><text x='50' y='66' font-size='52' font-family='Arial' font-weight='700' fill='white' text-anchor='middle'>H2</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
 /* ==========================================================================
-   TOKENS
-   Palette: cool instrument-white with a single hazard-red accent — the
-   red of pipeline signage and gauge redlines, not a decorative brand hue.
-   Display: Space Grotesk (geometric, technical). Body: Inter. Data/labels:
-   IBM Plex Mono, used everywhere a real number appears.
+   TOKENS — instrument-black with a single hazard-red signal. Everything
+   lives on dark ground; red is reserved for pressure, alerts, and controls.
+   Display: Sora. Body: Inter. Data: IBM Plex Mono.
    ========================================================================== */
 :root{
-  --paper:#FFFFFF;
-  --paper-2:#F5F6F8;
-  --card:#FFFFFF;
-  --ink:#14161A;
-  --muted:#565D66;
-  --dim:#8B929B;
-  --line:rgba(20,22,26,0.11);
-  --line-2:rgba(20,22,26,0.22);
-  --red:#C81E3A;
-  --red-deep:#8E1029;
-  --red-pale:#FCE9EC;
-  --dw:#C81E3A;      /* Darcy-Weisbach series colour */
-  --aga:#14161A;     /* AGA series colour */
-  --display:'Space Grotesk',sans-serif;
+  --bg:#0A0B0D;
+  --bg-2:#131519;
+  --bg-3:#1A1C21;
+  --line:rgba(255,255,255,.09);
+  --line-2:rgba(255,255,255,.18);
+  --ink:#F2F3F5;
+  --muted:#9BA0A8;
+  --dim:#63676F;
+  --red:#E01B3D;
+  --red-2:#FF4D6A;
+  --red-deep:#8E0F27;
+  --red-glow:rgba(224,27,61,.45);
+  --display:'Sora',sans-serif;
   --body:'Inter',system-ui,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,monospace;
   --ease:cubic-bezier(.22,1,.36,1);
+  --rail:76px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.7;font-size:16.5px;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.7;font-size:16.5px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 ::selection{background:var(--red);color:#fff}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 button{font:inherit}
-.container{max-width:1180px;margin:0 auto;padding:0 clamp(1.2rem,5vw,3rem)}
-section{position:relative;padding:clamp(4rem,9vh,6.5rem) 0}
-.alt{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.sec-head{margin-bottom:clamp(2rem,5vh,3rem)}
-.sec-label{font-family:var(--mono);font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem}
-.sec-label::after{content:'';flex:0 0 40px;height:1px;background:linear-gradient(90deg,var(--red),transparent)}
-h2.sec-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.8vw,2.6rem);line-height:1.08;letter-spacing:-.01em}
-.sec-sub{color:var(--muted);max-width:60ch;margin-top:.8rem;font-size:1.02rem}
 
-/* ============================================================ NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1.1rem clamp(1.2rem,5vw,3rem);transition:background .3s,padding .3s,border-color .3s,box-shadow .3s;border-bottom:1px solid transparent}
-nav.scrolled{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-color:var(--line);padding:.75rem clamp(1.2rem,5vw,3rem);box-shadow:0 1px 0 rgba(20,22,26,.02)}
-.logo{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.01em;display:flex;align-items:center;gap:.5rem}
-.logo .mark{width:26px;height:26px;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.68rem;font-weight:600;border-radius:5px}
-.nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center}
-.nav-links a{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);position:relative;transition:color .2s}
-.nav-links a:not(.nav-cta)::after{content:'';position:absolute;left:0;bottom:-5px;height:1px;width:0;background:var(--red);transition:width .3s var(--ease)}
-.nav-links a:hover,.nav-links a.active{color:var(--red-deep)}
-.nav-links a:not(.nav-cta):hover::after,.nav-links a:not(.nav-cta).active::after{width:100%}
-.nav-cta{border:1px solid var(--red);color:var(--red)!important;padding:.4rem 1rem;transition:background .2s,color .2s!important}
-.nav-cta:hover{background:var(--red);color:#fff!important}
-.hamburger{display:none;cursor:pointer;flex-direction:column;gap:5px;background:none;border:0;padding:6px}
-.hamburger span{display:block;width:22px;height:2px;background:var(--ink);transition:transform .3s,opacity .3s}
-.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.hamburger.open span:nth-child(2){opacity:0}
-.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-@media (max-width:820px){
-  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:flex-start;gap:1rem;background:rgba(255,255,255,.98);backdrop-filter:blur(14px);padding:1.4rem;border-bottom:1px solid var(--line)}
-  .nav-links.open{display:flex}
-  .hamburger{display:flex}
+/* ============================================================ AMBIENT FLOAT LAYER */
+#floatLayer{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ============================================================ RAIL NAV */
+.rail{position:fixed;top:0;left:0;bottom:0;width:var(--rail);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1.3rem 0;border-right:1px solid var(--line);background:rgba(10,11,13,.7);backdrop-filter:blur(10px)}
+.rail-mark{width:38px;height:38px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:.72rem;color:#fff;box-shadow:0 0 22px var(--red-glow)}
+.rail-nav{position:relative;display:flex;flex-direction:column;gap:1.6rem;align-items:center}
+.rail-indicator{position:absolute;left:50%;transform:translate(-50%,0);width:6px;height:6px;background:var(--red);border-radius:50%;box-shadow:0 0 10px var(--red-glow);transition:top .45s var(--ease);top:0;pointer-events:none}
+.rail-dot{width:6px;height:6px;border-radius:50%;background:var(--line-2);cursor:pointer;position:relative;transition:background .25s;flex:0 0 auto}
+.rail-dot:hover{background:var(--muted)}
+.rail-dot.active{background:transparent}
+.rail-dot .tip{position:absolute;left:20px;top:50%;transform:translateY(-50%) translateX(-6px);font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;background:var(--bg-3);border:1px solid var(--line);padding:.3rem .6rem;border-radius:3px}
+.rail-dot:hover .tip{opacity:1;transform:translateY(-50%) translateX(0)}
+.rail-foot{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.rail-progress{width:2px;height:70px;background:var(--line);position:relative;border-radius:2px;overflow:hidden}
+.rail-progress span{position:absolute;bottom:0;left:0;width:100%;height:0%;background:linear-gradient(180deg,var(--red-2),var(--red-deep))}
+.rail-cv{writing-mode:vertical-rl;text-orientation:mixed;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);padding:.7rem .45rem;border-radius:3px;transition:color .2s,border-color .2s}
+.rail-cv:hover{color:var(--red-2);border-color:var(--red)}
+
+.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:300;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;background:rgba(10,11,13,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .rail-mark{width:32px;height:32px;font-size:.62rem}
+.topbar-burger{width:38px;height:38px;border:1px solid var(--line-2);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:transparent}
+.topbar-burger span{width:16px;height:1.5px;background:var(--ink);transition:transform .3s,opacity .3s}
+.topbar-burger.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+.topbar-burger.open span:nth-child(2){opacity:0}
+.topbar-burger.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
+.mobile-menu{display:none;position:fixed;top:58px;left:0;right:0;z-index:299;background:rgba(10,11,13,.98);border-bottom:1px solid var(--line);padding:1rem 1.3rem 1.4rem;flex-direction:column;gap:.2rem}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-family:var(--mono);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.75rem 0;border-bottom:1px solid var(--line)}
+.mobile-menu a:last-child{border-bottom:0}
+.mobile-menu a:hover{color:var(--red-2)}
+
+@media (max-width:860px){
+  .rail{display:none}
+  .topbar{display:flex}
+  main{margin-left:0!important}
+  body{padding-top:58px}
 }
 
-/* ============================================================ HERO */
-#hero{min-height:100svh;display:flex;align-items:flex-end;position:relative;overflow:hidden;padding-top:6rem;padding-bottom:clamp(3rem,8vh,5rem)}
-#pipeField{position:absolute;inset:0;width:100%;height:100%;display:block}
-.hero-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.08) 30%,rgba(255,255,255,.18) 60%,rgba(255,255,255,.96) 100%)}
-.hero-inner{position:relative;z-index:2;width:100%;max-width:1180px;margin:0 auto;padding:0 clamp(1.2rem,5vw,3rem)}
-.hero-eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-deep);margin-bottom:1rem;display:flex;align-items:center;gap:.7rem}
-.hero-eyebrow::before{content:'';width:30px;height:1px;background:var(--red)}
-#hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2.3rem,6.6vw,4.6rem);line-height:1.04;letter-spacing:-.015em;margin-bottom:1.2rem;max-width:17ch}
-#hero h1 .grad{color:var(--red)}
-.hero-sub{color:var(--muted);font-size:clamp(1rem,1.4vw,1.14rem);max-width:58ch;margin-bottom:2rem}
-.hero-sub strong{color:var(--ink);font-weight:600}
-.hero-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.6rem}
-.hero-btns{display:flex;gap:.8rem;flex-wrap:wrap}
-.btn{font-family:var(--mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;padding:.8rem 1.5rem;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .25s var(--ease);display:inline-block;border:1px solid transparent;border-radius:2px}
-.btn:hover{transform:translateY(-2px)}
-.btn-primary{background:var(--red);color:#fff;font-weight:600}
-.btn-primary:hover{background:var(--red-deep)}
-.btn-outline{border-color:var(--line-2);color:var(--ink)}
-.btn-outline:hover{border-color:var(--red);color:var(--red-deep)}
-.hero-gauge{position:absolute;z-index:2;top:calc(6rem + 1rem);right:clamp(1.2rem,4vw,2.6rem);font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--dim);text-align:right;line-height:1.85;text-transform:uppercase}
-.hero-gauge b{color:var(--red-deep);font-weight:600}
-@media (max-width:760px){.hero-gauge{display:none}}
+/* ============================================================ LAYOUT */
+main{margin-left:var(--rail);position:relative;z-index:1}
+.container{max-width:1120px;margin:0 auto;padding:0 clamp(1.3rem,4.5vw,3.2rem)}
+section{position:relative;padding:clamp(4.5rem,10vh,7rem) 0}
+.station{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-2);margin-bottom:.9rem;display:flex;align-items:center;gap:.8rem}
+.station::before{content:'⌁';color:var(--red)}
+.station::after{content:'';flex:0 0 36px;height:1px;background:linear-gradient(90deg,var(--red),transparent)}
+h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6vw,2.5rem);line-height:1.1;letter-spacing:-.01em}
+.h-sub{color:var(--muted);max-width:62ch;margin-top:.85rem;font-size:1.02rem;text-align:justify}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--line-2),transparent)}
 
-/* ============================================================ TICKER */
-.ticker-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;background:var(--paper-2);padding:.8rem 0;position:relative;z-index:2}
-.ticker{display:flex;width:max-content;animation:ticker 42s linear infinite}
-.ticker-wrap:hover .ticker{animation-play-state:paused}
-.ticker span{font-family:var(--mono);font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);padding:0 1.5rem;display:flex;align-items:center;gap:1.5rem;white-space:nowrap}
-.ticker span::after{content:'◆';color:var(--red);font-size:.46rem}
-@keyframes ticker{to{transform:translateX(-50%)}}
+/* ============================================================ HERO */
+#hero{min-height:100svh;display:flex;align-items:center;padding-top:clamp(5rem,10vh,7rem)}
+#hero .container{display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center;width:100%}
+.hero-eyebrow{font-family:var(--mono);font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-2);margin-bottom:1.1rem;display:flex;align-items:center;gap:.7rem}
+.hero-eyebrow::before{content:'';width:26px;height:1px;background:var(--red)}
+#hero h1{font-family:var(--display);font-weight:800;font-size:clamp(2.3rem,5.4vw,3.9rem);line-height:1.04;letter-spacing:-.02em;margin-bottom:1.2rem}
+#hero h1 .accent{color:var(--red-2)}
+.hero-sub{color:var(--muted);font-size:clamp(1rem,1.3vw,1.1rem);max-width:52ch;margin-bottom:2rem;text-align:justify}
+.hero-sub strong{color:var(--ink);font-weight:600}
+.hero-btns{display:flex;gap:.8rem;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:.85rem 1.5rem;cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s,border-color .2s,background .2s,color .2s;display:inline-block;border:1px solid transparent;border-radius:4px}
+.btn-primary{background:var(--red);color:#fff;font-weight:600;box-shadow:0 0 0 rgba(224,27,61,0)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(224,27,61,.28)}
+.btn-outline{border-color:var(--line-2);color:var(--ink)}
+.btn-outline:hover{border-color:var(--red);color:var(--red-2);transform:translateY(-3px)}
+
+.hero-visual{position:relative;height:min(58vh,480px);display:flex;align-items:center;justify-content:center}
+.hero-visual canvas{position:absolute;inset:0;width:100%;height:100%}
+.gauge-float{position:absolute;background:rgba(19,21,25,.82);border:1px solid var(--line-2);border-radius:10px;padding:.9rem 1.1rem;backdrop-filter:blur(6px);font-family:var(--mono);animation:bob 6s ease-in-out infinite}
+.gauge-float .k{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:.25rem}
+.gauge-float .v{font-size:1.15rem;color:var(--ink);font-weight:600}
+.gauge-float .v span{color:var(--red-2)}
+.gauge-1{top:8%;left:2%;animation-delay:0s}
+.gauge-2{bottom:12%;right:0;animation-delay:-2s}
+.gauge-3{top:44%;right:6%;animation-delay:-4s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero-ghost{position:absolute;font-family:var(--display);font-weight:800;font-size:clamp(9rem,22vw,15rem);color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.06);letter-spacing:-.03em;user-select:none;z-index:-1}
+@media (max-width:940px){
+  #hero .container{grid-template-columns:1fr}
+  .hero-visual{height:280px;margin-top:1rem}
+  .hero-ghost{display:none}
+}
+
+/* ============================================================ SPEC STRIP (floating pills, no marquee) */
+.spec-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.3rem clamp(1.3rem,4.5vw,3.2rem);display:flex;flex-wrap:wrap;gap:.6rem .7rem;justify-content:center;background:var(--bg-2)}
+.spec-pill{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);padding:.42rem .95rem;border-radius:20px;animation:pillfloat 5.5s ease-in-out infinite}
+@keyframes pillfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
 /* ============================================================ ABOUT */
-.about-grid{display:grid;grid-template-columns:280px 1fr;gap:clamp(2rem,5vw,4rem);align-items:start}
-.portrait{position:relative}
-.portrait img{width:100%;aspect-ratio:4/5;object-fit:cover;filter:saturate(.95) contrast(1.03);border:1px solid var(--line-2)}
-.portrait::after{content:'';position:absolute;inset:0;border:1px solid var(--red);transform:translate(10px,10px);pointer-events:none;transition:transform .4s var(--ease);z-index:-1}
-.portrait:hover::after{transform:translate(5px,5px)}
-.portrait-tag{position:absolute;bottom:-10px;left:10px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);background:var(--paper);padding:2px 9px;border:1px solid var(--line)}
-.about-text p{color:var(--muted);margin-bottom:1rem;font-size:1.02rem}
+.about-wrap{display:grid;grid-template-columns:300px 1fr;gap:clamp(2rem,5vw,4rem);align-items:start}
+.portrait-stack{position:relative}
+.portrait-stack .frame{position:absolute;inset:0;border:1px solid var(--red);border-radius:12px;transform:translate(14px,14px);z-index:0}
+.portrait-stack img{position:relative;z-index:1;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:12px;border:1px solid var(--line-2);filter:saturate(.92) contrast(1.05)}
+.portrait-badge{position:absolute;z-index:2;bottom:-16px;left:-16px;background:var(--red);color:#fff;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.55rem .8rem;border-radius:8px;box-shadow:0 10px 26px rgba(224,27,61,.35);animation:bob 7s ease-in-out infinite}
+.about-text p{color:var(--muted);margin-bottom:1rem;font-size:1.02rem;text-align:justify}
 .about-text strong{color:var(--ink);font-weight:600}
 .about-links{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem}
-.chip{font-family:var(--mono);font-size:.78rem;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line-2);padding:.38rem .9rem;transition:color .2s,border-color .2s,transform .25s var(--ease);display:inline-flex;align-items:center;gap:.4rem;border-radius:2px}
-.chip:hover{color:var(--red-deep);border-color:var(--red);transform:translateY(-2px)}
-.chip::before{content:'↗';color:var(--red);font-size:.66rem}
-.stack{margin-top:2.8rem;border:1px solid var(--line)}
-.stack-row{display:grid;grid-template-columns:210px 1fr;gap:1.4rem;padding:1rem 1.4rem;border-bottom:1px solid var(--line);transition:background .25s}
-.stack-row:last-child{border-bottom:0}
-.stack-row:hover{background:var(--paper-2)}
-.stack-key{font-family:var(--mono);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-deep);padding-top:.15rem}
-.stack-val{color:var(--muted);font-size:.96rem}
-.stack-val em{color:var(--ink);font-style:normal;font-weight:500}
-@media (max-width:820px){.about-grid{grid-template-columns:1fr}.portrait{max-width:260px}.stack-row{grid-template-columns:1fr;gap:.25rem}}
+.chip{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line-2);padding:.4rem .9rem;transition:color .2s,border-color .2s,transform .25s var(--ease);display:inline-flex;align-items:center;gap:.4rem;border-radius:20px}
+.chip:hover{color:var(--red-2);border-color:var(--red);transform:translateY(-2px)}
+.chip::before{content:'↗';color:var(--red);font-size:.64rem}
+
+.skill-groups{margin-top:2.6rem;display:flex;flex-direction:column;gap:1.1rem}
+.skill-group{display:flex;gap:1.2rem;padding:1rem 0;border-top:1px solid var(--line)}
+.skill-group:last-child{padding-bottom:0}
+.skill-group .g-label{flex:0 0 170px;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-2)}
+.skill-tags{display:flex;flex-wrap:wrap;gap:.5rem}
+.skill-tag{font-family:var(--mono);font-size:.78rem;color:var(--muted);border:1px solid var(--line);background:var(--bg-2);padding:.32rem .75rem;border-radius:5px}
+@media (max-width:860px){.about-wrap{grid-template-columns:1fr}.portrait-stack{max-width:260px}.skill-group{flex-direction:column;gap:.5rem}.skill-group .g-label{flex:none}}
 
 /* ============================================================ EXPERIENCE */
-.runlog{border-left:1px solid var(--line-2);margin-left:4px}
-.run{position:relative;padding:0 0 2.2rem 2rem}
-.run:last-child{padding-bottom:0}
-.run::before{content:'';position:absolute;left:-5px;top:7px;width:9px;height:9px;background:var(--paper);border:1px solid var(--red);transform:rotate(45deg);transition:background .25s}
-.run:hover::before{background:var(--red)}
-.run-date{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-deep);margin-bottom:.3rem}
-.run h3{font-family:var(--display);font-weight:700;font-size:1.16rem}
-.run .run-role{color:var(--muted);font-size:.86rem;font-family:var(--mono);margin:.15rem 0 .55rem}
-.run ul{color:var(--muted);font-size:.96rem;max-width:68ch;padding-left:1.1rem}
-.run ul li{margin-bottom:.3rem}
+.exp-list{display:flex;flex-direction:column;gap:1rem}
+.exp-card{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:1.6rem 1.8rem;overflow:hidden;transition:border-color .3s,transform .3s var(--ease)}
+.exp-card:hover{border-color:var(--red);transform:translateX(6px)}
+.exp-num{position:absolute;right:1.2rem;top:.6rem;font-family:var(--display);font-weight:800;font-size:4.2rem;color:rgba(255,255,255,.035);line-height:1;user-select:none}
+.exp-date{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-2);margin-bottom:.4rem}
+.exp-card h3{font-family:var(--display);font-weight:700;font-size:1.15rem}
+.exp-card .role{color:var(--muted);font-size:.85rem;font-family:var(--mono);margin:.2rem 0 .8rem}
+.exp-card ul{color:var(--muted);font-size:.95rem;max-width:70ch;padding-left:1.1rem;position:relative;z-index:1}
+.exp-card ul li{margin-bottom:.35rem}
+.exp-fund{margin-top:.7rem;font-family:var(--mono);font-size:.78rem;color:var(--dim);position:relative;z-index:1}
 
-/* ============================================================ EDUCATION */
-.edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.1rem}
-.edu-card{background:var(--card);border:1px solid var(--line);padding:1.5rem 1.6rem;transition:transform .3s var(--ease),border-color .3s,background .3s;position:relative;overflow:hidden}
-.edu-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
-.edu-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 12px 28px rgba(20,22,26,.06)}
-.edu-card:hover::before{transform:scaleX(1)}
-.edu-year{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red-deep);margin-bottom:.55rem}
-.edu-card h3{font-family:var(--display);font-size:1.08rem;font-weight:700;margin-bottom:.25rem}
-.edu-card .inst{color:var(--muted);font-size:.86rem;font-family:var(--mono);margin-bottom:.55rem}
-.edu-card p{color:var(--muted);font-size:.92rem}
+/* ============================================================ EDUCATION (horizontal snap) */
+.edu-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:.5rem;scroll-snap-type:x mandatory}
+.edu-scroll::-webkit-scrollbar{height:6px}
+.edu-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+.edu-card{scroll-snap-align:start;flex:0 0 clamp(240px,32vw,300px);background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:1.5rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s var(--ease)}
+.edu-card:hover{border-color:var(--red);transform:translateY(-5px)}
+.edu-ghost{position:absolute;right:.4rem;bottom:-.6rem;font-family:var(--display);font-weight:800;font-size:5rem;color:rgba(255,255,255,.035);line-height:1}
+.edu-card .yr{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-2);margin-bottom:.6rem}
+.edu-card h3{font-family:var(--display);font-size:1.05rem;font-weight:700;margin-bottom:.25rem;position:relative;z-index:1}
+.edu-card .inst{color:var(--muted);font-size:.82rem;font-family:var(--mono);margin-bottom:.55rem;position:relative;z-index:1}
+.edu-card p{color:var(--muted);font-size:.9rem;position:relative;z-index:1}
 
 /* ============================================================ SIMULATOR */
-#simulator{background:var(--ink);color:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-#simulator .sec-label{color:#ff6b81}
-#simulator .sec-label::after{background:linear-gradient(90deg,#ff6b81,transparent)}
-#simulator .sec-sub{color:#B8BCC3}
-.sim-panel{display:grid;grid-template-columns:290px 1fr;gap:1.4rem;margin-top:2rem;background:#1B1D22;border:1px solid rgba(255,255,255,.09)}
-.sim-controls{padding:1.4rem;border-right:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;gap:1.1rem}
+#simulator{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sim-panel{display:grid;grid-template-columns:280px 1fr;gap:1.2rem;margin-top:2rem;background:var(--bg-3);border:1px solid var(--line-2);border-radius:14px;overflow:hidden}
+.sim-controls{padding:1.4rem;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:1.1rem}
 .ctrl{display:flex;flex-direction:column;gap:.4rem}
-.ctrl label{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#9EA3AB;display:flex;justify-content:space-between}
-.ctrl label b{color:#fff;font-weight:600}
-.ctrl input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:rgba(255,255,255,.18);border-radius:2px;outline:none}
-.ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer;border:2px solid #fff}
-.ctrl input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer;border:2px solid #fff}
-.sim-controls .reset-btn{margin-top:.4rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#B8BCC3;border:1px solid rgba(255,255,255,.18);background:transparent;padding:.6rem;cursor:pointer;transition:border-color .2s,color .2s}
-.sim-controls .reset-btn:hover{border-color:var(--red);color:#fff}
+.ctrl label{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between}
+.ctrl label b{color:var(--ink);font-weight:600}
+.ctrl input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:var(--line-2);border-radius:2px;outline:none}
+.ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer;border:2px solid #0A0B0D;box-shadow:0 0 8px var(--red-glow)}
+.ctrl input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer;border:2px solid #0A0B0D}
+.reset-btn{margin-top:.4rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);background:transparent;padding:.6rem;cursor:pointer;transition:border-color .2s,color .2s;border-radius:4px}
+.reset-btn:hover{border-color:var(--red);color:var(--red-2)}
 .sim-main{padding:1.4rem;min-width:0}
-.sim-tabs{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.09);padding-bottom:.8rem}
-.sim-tab{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#9EA3AB;background:transparent;border:1px solid rgba(255,255,255,.14);padding:.5rem .9rem;cursor:pointer;transition:border-color .2s,color .2s,background .2s;border-radius:2px}
-.sim-tab.active{color:#fff;border-color:var(--red);background:rgba(200,30,58,.18)}
-.chart-wrap{position:relative;background:#101216;border:1px solid rgba(255,255,255,.08)}
-canvas.chart{display:block;width:100%;height:340px}
-.chart-tip{position:absolute;pointer-events:none;background:#fff;color:var(--ink);font-family:var(--mono);font-size:.72rem;line-height:1.5;padding:.5rem .7rem;border-radius:3px;box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;transition:opacity .12s;white-space:pre;z-index:5}
-.sim-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-top:1.1rem}
-.stat{background:#101216;border:1px solid rgba(255,255,255,.08);padding:.75rem .9rem}
-.stat .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#8189;color:#9EA3AB;margin-bottom:.3rem}
-.stat .v{font-family:var(--mono);font-size:1.02rem;color:#fff;font-weight:600}
-.stat .v.red{color:#ff6b81}
-.sim-table{width:100%;border-collapse:collapse;margin-top:1.1rem;font-family:var(--mono);font-size:.82rem}
-.sim-table th,.sim-table td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid rgba(255,255,255,.09)}
-.sim-table th{color:#9EA3AB;font-weight:500;text-transform:uppercase;font-size:.68rem;letter-spacing:.08em}
-.sim-table td{color:#fff}
-.sim-table td:first-child{color:#B8BCC3}
-.verdict{display:inline-block;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .6rem;border-radius:2px}
-.verdict.agree{background:rgba(80,200,120,.18);color:#7CE0A0}
-.verdict.diverge{background:rgba(255,107,129,.18);color:#ff6b81}
-.sim-note{font-family:var(--mono);font-size:.72rem;color:#8B929B;margin-top:.9rem;line-height:1.7}
-@media (max-width:860px){.sim-panel{grid-template-columns:1fr}.sim-controls{border-right:0;border-bottom:1px solid rgba(255,255,255,.09)}}
+.sim-tabs{position:relative;display:flex;gap:.25rem;flex-wrap:wrap;margin-bottom:1rem;border-bottom:1px solid var(--line);padding-bottom:.8rem}
+.sim-tab{font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:transparent;border:1px solid var(--line-2);padding:.5rem .85rem;cursor:pointer;transition:border-color .2s,color .2s,background .2s;border-radius:20px}
+.sim-tab.active{color:#fff;border-color:var(--red);background:var(--red-deep)}
+.chart-wrap{position:relative;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+canvas.chart{display:block;width:100%;height:320px}
+.chart-tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-family:var(--mono);font-size:.72rem;line-height:1.5;padding:.5rem .7rem;border-radius:5px;box-shadow:0 8px 20px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;white-space:pre;z-index:5}
+.sim-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.1rem}
+.stat{background:var(--bg);border:1px solid var(--line);padding:.75rem .9rem;border-radius:8px}
+.stat .k{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:.3rem}
+.stat .v{font-family:var(--mono);font-size:1rem;color:var(--ink);font-weight:600}
+.stat .v.red{color:var(--red-2)}
+.sim-table{width:100%;border-collapse:collapse;margin-top:1.1rem;font-family:var(--mono);font-size:.8rem}
+.sim-table th,.sim-table td{text-align:left;padding:.6rem .5rem;border-bottom:1px solid var(--line)}
+.sim-table th{color:var(--dim);font-weight:500;text-transform:uppercase;font-size:.66rem;letter-spacing:.08em}
+.sim-table td{color:var(--ink)}
+.sim-table td:first-child{color:var(--muted)}
+.sim-note{font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-top:.9rem;line-height:1.7;text-align:justify}
+.sim-output{display:none}
+.sim-gate{min-height:340px;border:1px dashed var(--line-2);border-radius:8px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2.4rem clamp(1.4rem,5vw,4rem);gap:1.1rem}
+.gate-icon{width:52px;height:52px;border:1px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--red-2);font-size:1.4rem;animation:bob 6s ease-in-out infinite}
+.gate-text{color:var(--muted);font-size:1rem;max-width:56ch;text-align:justify;text-align-last:center}
+.gate-link{color:var(--red-2);font-weight:600;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
+.gate-link:hover{color:var(--red)}
+@media (max-width:860px){.sim-panel{grid-template-columns:1fr}.sim-controls{border-right:0;border-bottom:1px solid var(--line)}}
 
 /* ============================================================ PUBLICATIONS */
-.pub-list{border-top:1px solid var(--line)}
-.pub{display:grid;grid-template-columns:80px 1fr auto;gap:1.4rem;align-items:baseline;padding:1.3rem .3rem;border-bottom:1px solid var(--line);transition:background .25s,padding .3s var(--ease)}
-.pub:hover{background:var(--paper-2);padding-left:.9rem}
-.pub-year{font-family:var(--mono);font-size:.88rem;color:var(--red-deep);font-weight:600}
-.pub h3{font-size:1.02rem;font-weight:600;line-height:1.42;margin-bottom:.2rem}
-.pub .venue{color:var(--muted);font-size:.84rem;font-family:var(--mono)}
-.pub-link{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red-deep);border:1px solid var(--line-2);padding:.22rem .7rem;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
+.pub-stack{display:flex;flex-direction:column;gap:.9rem}
+.pub-card{display:grid;grid-template-columns:88px 1fr auto;gap:1.4rem;align-items:center;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.4rem;transition:border-color .25s,transform .25s var(--ease)}
+.pub-card:hover{border-color:var(--red);transform:translateX(5px)}
+.pub-yr{font-family:var(--mono);font-size:1.15rem;color:var(--red-2);font-weight:600;border-right:1px solid var(--line);padding-right:1rem}
+.pub-card h3{font-size:1rem;font-weight:600;line-height:1.42;margin-bottom:.25rem}
+.pub-card .venue{color:var(--muted);font-size:.82rem;font-family:var(--mono)}
+.pub-link{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red-2);border:1px solid var(--line-2);padding:.32rem .8rem;white-space:nowrap;border-radius:20px;transition:background .2s,color .2s,border-color .2s}
 .pub-link:hover{background:var(--red);color:#fff;border-color:var(--red)}
-@media (max-width:680px){.pub{grid-template-columns:1fr;gap:.35rem}.pub-link{justify-self:start}}
+@media (max-width:640px){.pub-card{grid-template-columns:1fr;gap:.5rem}.pub-yr{border-right:0;padding-right:0}.pub-link{justify-self:start}}
 
-/* ============================================================ PRESENTATIONS / TIMELINE */
-.pres-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem}
-.pres-col h4{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red-deep);margin-bottom:.9rem}
+/* ============================================================ PRESENTATIONS + TIMELINE */
+.pres-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.pres-col h4{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red-2);margin-bottom:.9rem}
 .pres-col ul{list-style:none}
-.pres-col li{padding:.7rem 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:.96rem}
+.pres-col li{padding:.7rem 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:.95rem}
 .pres-col li:last-child{border-bottom:0}
 .pres-col li strong{color:var(--ink);font-weight:600;display:block;margin-bottom:.1rem}
 @media (max-width:700px){.pres-grid{grid-template-columns:1fr;gap:1.6rem}}
 
-.timeline{margin-top:2.6rem;border-top:1px solid var(--line)}
-.tl-row{display:grid;grid-template-columns:170px 1fr;gap:1.2rem;padding:.85rem .2rem;border-bottom:1px solid var(--line);font-size:.92rem}
-.tl-row .date{font-family:var(--mono);font-size:.78rem;color:var(--red-deep)}
-.tl-row .what{color:var(--muted)}
-@media (max-width:600px){.tl-row{grid-template-columns:1fr;gap:.2rem}}
+.tl-scroll{display:flex;gap:0;overflow-x:auto;margin-top:2.6rem;padding:1.6rem 0 1rem;position:relative}
+.tl-scroll::before{content:'';position:absolute;left:0;right:0;top:calc(1.6rem + 5px);height:1px;background:var(--line-2)}
+.tl-item{flex:0 0 190px;position:relative;padding:0 1rem}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--red);margin-bottom:.9rem;box-shadow:0 0 10px var(--red-glow);animation:pillfloat 5s ease-in-out infinite}
+.tl-item .date{font-family:var(--mono);font-size:.72rem;color:var(--red-2);margin-bottom:.3rem}
+.tl-item .what{color:var(--muted);font-size:.86rem;line-height:1.5}
 
-/* ============================================================ CERTIFICATES */
-.cert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
-.cert-card{background:var(--card);border:1px solid var(--line);padding:1.3rem 1.4rem;display:flex;flex-direction:column;gap:.6rem;transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
-.cert-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 12px 28px rgba(20,22,26,.06)}
-.cert-icon{width:32px;height:32px;border:1px solid var(--red);color:var(--red-deep);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.66rem;font-weight:600;border-radius:3px}
-.cert-card h4{font-family:var(--display);font-size:.98rem;font-weight:600;line-height:1.35}
-.cert-card .meta{font-family:var(--mono);font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
-.cert-card a{margin-top:auto;font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red-deep);display:inline-flex;align-items:center;gap:.35rem}
-.cert-card a:hover{color:var(--red)}
+/* ============================================================ CERTIFICATES — ticket stubs */
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+.cert-stub{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:1.3rem 1.4rem;display:flex;flex-direction:column;gap:.6rem;transition:transform .3s var(--ease),border-color .3s}
+.cert-stub:hover{transform:translateY(-4px);border-color:var(--red)}
+.cert-stub::before,.cert-stub::after{content:'';position:absolute;width:16px;height:16px;background:var(--bg);border-radius:50%;top:50%;transform:translateY(-50%)}
+.cert-stub::before{left:-8px}
+.cert-stub::after{right:-8px}
+.cert-stamp{width:34px;height:34px;border:1px dashed var(--red);color:var(--red-2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.62rem;font-weight:600;border-radius:50%}
+.cert-stub h4{font-family:var(--display);font-size:.96rem;font-weight:600;line-height:1.35}
+.cert-stub .meta{font-family:var(--mono);font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.cert-stub a{margin-top:auto;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red-2);display:inline-flex;align-items:center;gap:.35rem}
+.cert-stub a:hover{color:var(--red)}
 
 /* ============================================================ CONTACT */
-#contact .contact-wrap{text-align:left;max-width:800px}
-.contact-big{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,5.4vw,3.4rem);line-height:1.08;letter-spacing:-.01em;margin-bottom:1.2rem}
-.contact-big .grad{color:var(--red)}
-#contact p.lede{color:var(--muted);max-width:52ch;margin-bottom:2rem}
+#contact .contact-wrap{text-align:left;max-width:760px}
+.contact-big{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,5vw,3.2rem);line-height:1.1;letter-spacing:-.015em;margin-bottom:1.2rem}
+.contact-big .accent{color:var(--red-2)}
+#contact p.lede{color:var(--muted);max-width:52ch;margin-bottom:2rem;text-align:justify}
 .contact-links{display:flex;flex-wrap:wrap;gap:.7rem}
+.contact-links .btn-primary{animation:bob 6s ease-in-out infinite}
 
 /* ============================================================ FOOTER */
-footer{border-top:1px solid var(--line);padding:1.8rem clamp(1.2rem,5vw,3rem);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
+footer{border-top:1px solid var(--line);padding:1.8rem clamp(1.3rem,4.5vw,3.2rem);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
 footer a{color:var(--muted);transition:color .2s}
-footer a:hover{color:var(--red-deep)}
+footer a:hover{color:var(--red-2)}
 
-.to-top{position:fixed;bottom:20px;right:20px;z-index:250;width:40px;height:40px;border:1px solid var(--line-2);cursor:pointer;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);color:var(--red-deep);font-size:1rem;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .3s,transform .3s,visibility .3s,border-color .2s;font-family:var(--mono);border-radius:3px}
-.to-top.show{opacity:1;visibility:visible;transform:none}
-.to-top:hover{border-color:var(--red)}
-
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s var(--ease)}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s var(--ease)}
 .reveal.in{opacity:1;transform:none}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}
-  .ticker{animation:none;flex-wrap:wrap;width:auto}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
-<nav id="nav">
-  <a class="logo" href="#hero"><span class="mark">H₂</span> Akshay Bambore</a>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#about">About</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#education">Education</a></li>
-    <li><a href="#simulator">Simulator</a></li>
-    <li><a href="#publications">Publications</a></li>
-    <li><a href="#certificates">Certificates</a></li>
-    <li><a href="#contact" class="nav-cta">Contact</a></li>
-  </ul>
-  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+<div id="floatLayer"><canvas id="ambientCanvas"></canvas></div>
+
+<!-- ═══ RAIL NAV (desktop) ═══ -->
+<nav class="rail" id="rail">
+  <a class="rail-mark" href="#hero">H₂</a>
+  <div class="rail-nav" id="railNav">
+    <div class="rail-indicator" id="railIndicator"></div>
+    <a class="rail-dot active" href="#hero" data-sec="hero"><span class="tip">Home</span></a>
+    <a class="rail-dot" href="#about" data-sec="about"><span class="tip">About</span></a>
+    <a class="rail-dot" href="#experience" data-sec="experience"><span class="tip">Experience</span></a>
+    <a class="rail-dot" href="#education" data-sec="education"><span class="tip">Education</span></a>
+    <a class="rail-dot" href="#simulator" data-sec="simulator"><span class="tip">Simulator</span></a>
+    <a class="rail-dot" href="#publications" data-sec="publications"><span class="tip">Publications</span></a>
+    <a class="rail-dot" href="#presentations" data-sec="presentations"><span class="tip">Presentations</span></a>
+    <a class="rail-dot" href="#certificates" data-sec="certificates"><span class="tip">Certificates</span></a>
+    <a class="rail-dot" href="#contact" data-sec="contact"><span class="tip">Contact</span></a>
+  </div>
+  <div class="rail-foot">
+    <div class="rail-progress"><span id="railProgress"></span></div>
+    <a class="rail-cv" href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener">CV ↗</a>
+  </div>
 </nav>
+
+<!-- ═══ TOP BAR (mobile) ═══ -->
+<div class="topbar" id="topbar">
+  <a class="rail-mark" href="#hero">H₂</a>
+  <button class="topbar-burger" id="topbarBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about">About</a>
+  <a href="#experience">Experience</a>
+  <a href="#education">Education</a>
+  <a href="#simulator">Simulator</a>
+  <a href="#publications">Publications</a>
+  <a href="#presentations">Presentations</a>
+  <a href="#certificates">Certificates</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<main>
 
 <!-- ═══ HERO ═══ -->
 <section id="hero">
-  <canvas id="pipeField" aria-hidden="true"></canvas>
-  <div class="hero-scrim"></div>
-
-  <div class="hero-gauge">
-    <b>Fig. 0</b> — GH₂ pipeline segment<br />
-    pressure decay between compressor stations<br />
-    live · move your cursor to perturb the flow
-  </div>
-
-  <div class="hero-inner">
-    <div class="hero-eyebrow">Dept. of Aero-Thermo-Mechanics · Université libre de Bruxelles</div>
-    <h1>I model how hydrogen pipelines <span class="grad">lose pressure — and wear out.</span></h1>
-    <p class="hero-sub">
-      I'm <strong>Akshay Bambore</strong>, a PhD researcher studying pressure losses in gaseous
-      hydrogen (GH₂) pipelines: CFD-based pipe-flow modelling, a wall erosion model, and how
-      internal surface degradation from hydrogen embrittlement changes performance over years
-      of operation — validated against a purpose-built pressure-loss test bench.
-    </p>
-    <div class="hero-row">
+  <div class="container">
+    <div>
+      <div class="hero-eyebrow">Dept. of Aero-Thermo-Mechanics · Université libre de Bruxelles</div>
+      <h1>I model how hydrogen pipelines <span class="accent">lose pressure — and wear out.</span></h1>
+      <p class="hero-sub">
+        I'm <strong>Akshay Bambore</strong>, a PhD researcher studying pressure losses in gaseous
+        hydrogen (GH₂) pipelines: CFD-based pipe-flow modelling, a wall erosion model, and how
+        internal surface degradation from hydrogen embrittlement changes performance over years
+        of operation.
+      </p>
       <div class="hero-btns">
         <a href="#simulator" class="btn btn-primary">Try the pressure-loss simulator</a>
         <a href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener" class="btn btn-outline">View CV</a>
       </div>
     </div>
+    <div class="hero-visual">
+      <div class="hero-ghost">H₂</div>
+      <canvas id="heroCanvas"></canvas>
+      <div class="gauge-float gauge-1"><div class="k">Inlet pressure</div><div class="v"><span>90</span> bar</div></div>
+      <div class="gauge-float gauge-1"><div class="k">Outlet pressure</div><div class="v"><span>55</span> bar</div></div>
+      <div class="gauge-float gauge-2"><div class="k">Compressibility Z</div><div class="v"><span>1.065</span></div></div>
+      <div class="gauge-float gauge-3"><div class="k">Model deviation</div><div class="v"><span>0.3</span>%</div></div>
+    </div>
   </div>
 </section>
 
-<!-- ═══ TICKER ═══ -->
-<div class="ticker-wrap" aria-hidden="true">
-  <div class="ticker" id="ticker">
-    <span>GH₂ Pipelines</span><span>Pressure Loss Modelling</span><span>Darcy-Weisbach</span><span>AGA Equation</span><span>Hydrogen Embrittlement</span><span>Wall Erosion Model</span><span>CFD</span><span>Python</span><span>Compressibility Factor Z(P)</span><span>Test Bench Validation</span>
-  </div>
+<!-- ═══ SPEC STRIP ═══ -->
+<div class="spec-strip" aria-hidden="true">
+  <span class="spec-pill" style="animation-delay:0s">GH₂ Pipelines</span>
+  <span class="spec-pill" style="animation-delay:-.4s">Darcy-Weisbach</span>
+  <span class="spec-pill" style="animation-delay:-.8s">AGA Equation</span>
+  <span class="spec-pill" style="animation-delay:-1.2s">Hydrogen Embrittlement</span>
+  <span class="spec-pill" style="animation-delay:-1.6s">Wall Erosion Model</span>
+  <span class="spec-pill" style="animation-delay:-2s">CFD</span>
+  <span class="spec-pill" style="animation-delay:-2.4s">Python</span>
+  <span class="spec-pill" style="animation-delay:-2.8s">Z(P) Interpolation</span>
+  <span class="spec-pill" style="animation-delay:-3.2s">Test Bench Validation</span>
 </div>
 
 <!-- ═══ ABOUT ═══ -->
 <section id="about">
   <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-label">01 · About</div>
-      <h2 class="sec-title">From governing equations<br />to a validated test bench.</h2>
+    <div class="reveal">
+      <div class="station">Checkpoint 01 · About</div>
+      <h2 class="h-title">From governing equations to a validated test bench.</h2>
     </div>
-    <div class="about-grid">
-      <div class="portrait reveal">
+    <div class="about-wrap" style="margin-top:2.4rem">
+      <div class="portrait-stack reveal">
+        <div class="frame"></div>
         <img src="profile.jpg" alt="Akshay Bambore" />
-        <div class="portrait-tag">Brussels, Belgium</div>
+        <div class="portrait-badge">PhD · ULB</div>
       </div>
       <div class="about-text reveal">
         <p>I'm a PhD researcher in the <strong>Department of Aero-Thermo-Mechanics</strong> at the <strong>Université libre de Bruxelles (ULB)</strong>, working on pressure-loss modelling for gaseous hydrogen (GH₂) pipelines. My work covers 2D and 3D pipe-flow CFD, development of a wall erosion model, and how a pipeline's internal surface condition degrades over years or decades of operation under hydrogen embrittlement and pressure cycling.</p>
-        <p>Alongside the modelling, I analyse external experimental data and work on the development and validation of a dedicated <strong>GH₂ pipe pressure-loss test bench</strong>, so the numerical models are checked against real measurements rather than theory alone.</p>
+        <p>Alongside the modelling, I analyse external experimental data and work on development and validation of a dedicated <strong>GH₂ pipe pressure-loss test bench</strong>, so the numerical models are checked against real measurements rather than theory alone.</p>
         <p>Before the PhD, I completed a Master's in Aerospace Engineering at <strong>Sapienza University of Rome</strong> and a Bachelor's in Mechanical Engineering at <strong>VTU, Belgaum</strong>, then spent three years at <strong>Tata Consultancy Services</strong> as a manual software tester, working on validation rules, workflow automation, and defect tracking for enterprise Salesforce deployments.</p>
         <div class="about-links">
           <a class="chip" href="mailto:akshay.bambore@ulb.be">Email</a>
@@ -333,68 +389,83 @@ footer a:hover{color:var(--red-deep)}
       </div>
     </div>
 
-    <div class="stack reveal">
-      <div class="stack-row">
-        <div class="stack-key">pipeline engineering</div>
-        <div class="stack-val">Pressure-loss modelling via <em>Darcy-Weisbach</em> and the <em>AGA equation</em>, compressibility factor Z(P) interpolation, compression-station siting, hydrogen embrittlement degradation analysis</div>
+    <div class="skill-groups reveal">
+      <div class="skill-group">
+        <div class="g-label">Pipeline Engineering</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Darcy-Weisbach modelling</span><span class="skill-tag">AGA equation</span><span class="skill-tag">Z(P) compressibility</span><span class="skill-tag">Compression-station siting</span><span class="skill-tag">Hydrogen embrittlement analysis</span>
+        </div>
       </div>
-      <div class="stack-row">
-        <div class="stack-key">cfd &amp; numerics</div>
-        <div class="stack-val">2D/3D pipe-flow computing, wall erosion model development, Colebrook-White friction factor iteration, mathematical modelling of pressure losses</div>
+      <div class="skill-group">
+        <div class="g-label">CFD &amp; Numerics</div>
+        <div class="skill-tags">
+          <span class="skill-tag">2D/3D pipe-flow computing</span><span class="skill-tag">Wall erosion model</span><span class="skill-tag">Colebrook-White iteration</span>
+        </div>
       </div>
-      <div class="stack-row">
-        <div class="stack-key">experimental</div>
-        <div class="stack-val">GH₂ pressure-loss test bench development &amp; validation, laser diffraction droplet-size characterisation (SMPATEC HELOS-VARIO/KR), spray control system operation</div>
+      <div class="skill-group">
+        <div class="g-label">Experimental</div>
+        <div class="skill-tags">
+          <span class="skill-tag">GH₂ test bench validation</span><span class="skill-tag">Laser diffraction (HELOS-VARIO/KR)</span><span class="skill-tag">Spray control systems</span>
+        </div>
       </div>
-      <div class="stack-row">
-        <div class="stack-key">programming</div>
-        <div class="stack-val"><em>Python</em> (NumPy, Matplotlib, PyQt5) for simulation tooling and interactive models</div>
+      <div class="skill-group">
+        <div class="g-label">Programming</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">NumPy</span><span class="skill-tag">Matplotlib</span><span class="skill-tag">PyQt5</span>
+        </div>
       </div>
-      <div class="stack-row">
-        <div class="stack-key">industry tools</div>
-        <div class="stack-val">Salesforce (validation rules, workflow automation, sharing rules), Azure DevOps (defect tracking, test-cycle reporting)</div>
+      <div class="skill-group">
+        <div class="g-label">Industry Tools</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Salesforce</span><span class="skill-tag">Azure DevOps</span>
+        </div>
       </div>
-      <div class="stack-row">
-        <div class="stack-key">languages</div>
-        <div class="stack-val">English — proficient · French — beginner</div>
+      <div class="skill-group">
+        <div class="g-label">Languages</div>
+        <div class="skill-tags">
+          <span class="skill-tag">English — Proficient</span><span class="skill-tag">French — Beginner</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ EXPERIENCE ═══ -->
-<section id="experience" class="alt">
+<section id="experience">
   <div class="container">
     <div class="sec-head reveal">
-      <div class="sec-label">02 · Experience</div>
-      <h2 class="sec-title">Run log.</h2>
-      <p class="sec-sub">Research and industry experience spanning pipeline physics, icing-tunnel instrumentation, and enterprise software testing.</p>
+      <div class="station">Checkpoint 02 · Experience</div>
+      <h2 class="h-title">Field &amp; run log.</h2>
+      <p class="h-sub">Research and industry experience spanning pipeline physics, icing-tunnel instrumentation, and enterprise software testing.</p>
     </div>
-    <div class="runlog">
-      <div class="run reveal">
-        <div class="run-date">2024 — Present</div>
+    <div class="exp-list" style="margin-top:2rem">
+      <div class="exp-card reveal">
+        <div class="exp-num">01</div>
+        <div class="exp-date">2024 — Present</div>
         <h3>PhD Researcher</h3>
-        <div class="run-role">Dept. of Aero-Thermo-Mechanics, ULB · Study, Modelling and Computing Pressure Losses in Hydrogen Pipelines</div>
+        <div class="role">Dept. of Aero-Thermo-Mechanics, ULB · Study, Modelling and Computing Pressure Losses in Hydrogen Pipelines</div>
         <ul>
           <li>Determine total pressure losses in GH₂ pipelines and their evolution over years/decades of operation as internal surface condition degrades from hydrogen embrittlement and erosion.</li>
           <li>Run CFD and mathematical models for 2D and 3D pipe flow and pressure loss; develop a wall erosion model.</li>
           <li>Analyse external experimental data and support development and validation of a GH₂ pipe pressure-loss test bench.</li>
         </ul>
-        <p class="run-desc" style="margin-top:.6rem;font-family:var(--mono);font-size:.82rem;color:var(--dim)">Funded by the Win4Excellence project — SPW Economy Employment Research (Walloon Region) and the Walloon Region Recovery Plan, agreement no. 2310142.</p>
+        <p class="exp-fund">Funded by the Win4Excellence project — SPW Economy Employment Research (Walloon Region) and the Walloon Region Recovery Plan, agreement no. 2310142.</p>
       </div>
-      <div class="run reveal">
-        <div class="run-date">2019</div>
+      <div class="exp-card reveal">
+        <div class="exp-num">02</div>
+        <div class="exp-date">2019</div>
         <h3>Research Intern</h3>
-        <div class="run-role">Dept. of Aero-Thermo-Mechanics · Experimental Characterization of Rainfall Injectors for Icing Wind Tunnel</div>
+        <div class="role">Dept. of Aero-Thermo-Mechanics · Experimental Characterization of Rainfall Injectors for Icing Wind Tunnel</div>
         <ul>
           <li>Ran high-precision laser diffraction tests on a SMPATEC HELOS-VARIO/KR system to characterise droplet-size distribution across ten rainfall nozzles.</li>
           <li>Operated a Model Delta Autojet 2008+ spray control panel and PulsaJet nozzles to simulate light, moderate, and heavy rainfall, and fog.</li>
         </ul>
       </div>
-      <div class="run reveal">
-        <div class="run-date">2021 — 2024</div>
+      <div class="exp-card reveal">
+        <div class="exp-num">03</div>
+        <div class="exp-date">2021 — 2024</div>
         <h3>Tata Consultancy Services</h3>
-        <div class="run-role">Manual Software Tester</div>
+        <div class="role">Manual Software Tester</div>
         <ul>
           <li>Tested validation rules, workflow rules, approval processes, field updates, and email alerts against application requirements.</li>
           <li>Created and customised users; tested security and sharing rules across profiles, roles, and record types.</li>
@@ -410,24 +481,28 @@ footer a:hover{color:var(--red-deep)}
 <section id="education">
   <div class="container">
     <div class="sec-head reveal">
-      <div class="sec-label">03 · Education</div>
-      <h2 class="sec-title">Academic background.</h2>
+      <div class="station">Checkpoint 03 · Education</div>
+      <h2 class="h-title">Academic background.</h2>
+      <p class="h-sub">Scroll sideways for the full record.</p>
     </div>
-    <div class="edu-grid">
-      <div class="edu-card reveal">
-        <div class="edu-year">2024 — Present</div>
+    <div class="edu-scroll reveal" style="margin-top:2rem">
+      <div class="edu-card">
+        <div class="edu-ghost">24</div>
+        <div class="yr">2024 — Present</div>
         <h3>PhD, Aero-Thermo-Mechanics</h3>
         <div class="inst">Université libre de Bruxelles · Belgium</div>
         <p>Pressure-loss modelling and wall erosion modelling for GH₂ pipelines, with test-bench validation.</p>
       </div>
-      <div class="edu-card reveal">
-        <div class="edu-year">2017 — 2020</div>
+      <div class="edu-card">
+        <div class="edu-ghost">17</div>
+        <div class="yr">2017 — 2020</div>
         <h3>Masters in Aerospace Engineering</h3>
         <div class="inst">Sapienza University of Rome · Italy</div>
         <p>Aerospace engineering fundamentals with a focus on fluid dynamics and propulsion.</p>
       </div>
-      <div class="edu-card reveal">
-        <div class="edu-year">2012 — 2016</div>
+      <div class="edu-card">
+        <div class="edu-ghost">12</div>
+        <div class="yr">2012 — 2016</div>
         <h3>Bachelors of Mechanical Engineering</h3>
         <div class="inst">VTU Belgaum · India</div>
         <p>Core mechanical engineering: thermodynamics, fluid mechanics, and machine design.</p>
@@ -440,9 +515,9 @@ footer a:hover{color:var(--red-deep)}
 <section id="simulator">
   <div class="container">
     <div class="sec-head reveal">
-      <div class="sec-label">04 · Live Tool</div>
-      <h2 class="sec-title">GH₂ pipeline pressure-loss simulator.</h2>
-      <p class="sec-sub">A browser port of my PyQt5 research tool. It integrates pressure loss along a pipeline two ways — Darcy-Weisbach with a Colebrook-White friction factor (Re-dependent), and the AGA fully-turbulent equation — using the same tabulated compressibility factor Z(P) and equation of state in both. Drag the sliders; everything recomputes instantly, entirely in your browser.</p>
+      <div class="station">Checkpoint 04 · Live Tool</div>
+      <h2 class="h-title">GH₂ pipeline pressure-loss simulator.</h2>
+      <p class="h-sub">A browser port of my PyQt5 research tool. It integrates pressure loss along a pipeline two ways — Darcy-Weisbach with a Colebrook-White friction factor (Re-dependent), and the AGA fully-turbulent equation — using the same tabulated compressibility factor Z(P) and equation of state in both. Drag the sliders; everything recomputes instantly, entirely in your browser.</p>
     </div>
 
     <div class="sim-panel reveal">
@@ -475,40 +550,48 @@ footer a:hover{color:var(--red-deep)}
       </div>
 
       <div class="sim-main">
-        <div class="sim-tabs" id="simTabs">
-          <button class="sim-tab active" data-tab="pressure">Pressure profile</button>
-          <button class="sim-tab" data-tab="friction">Friction factor</button>
-          <button class="sim-tab" data-tab="ztable">Compressibility Z(P)</button>
-          <button class="sim-tab" data-tab="velocity">Local velocity</button>
-          <button class="sim-tab" data-tab="density">Local density</button>
-        </div>
-        <div class="chart-wrap">
-          <canvas class="chart" id="simCanvas"></canvas>
-          <div class="chart-tip" id="chartTip"></div>
+        <div class="sim-gate">
+          <div class="gate-icon">⛯</div>
+          <p class="gate-text">This panel is wired to a working Darcy-Weisbach vs AGA pressure-loss engine — live pressure, velocity, density and friction-factor profiles across the pipeline, recomputed as you move the sliders. Output is currently reserved for direct discussion rather than open publication. To run the full simulation, kindly <a href="#contact" class="gate-link">get in touch</a> and I'll walk you through it.</p>
         </div>
 
-        <div class="sim-stats">
-          <div class="stat"><div class="k">Z at inlet</div><div class="v" id="st_z">—</div></div>
-          <div class="stat"><div class="k">ρ at inlet</div><div class="v" id="st_rho">—</div></div>
-          <div class="stat"><div class="k">Re at inlet</div><div class="v" id="st_re">—</div></div>
-          <div class="stat"><div class="k">Mass flow</div><div class="v" id="st_mf">—</div></div>
-          <div class="stat"><div class="k">Flow rate</div><div class="v" id="st_q">—</div></div>
-          <div class="stat"><div class="k">Model agreement</div><div class="v red" id="st_verdict">—</div></div>
-        </div>
+        <!-- Full output — computed live in the background, kept out of view per current settings -->
+        <div class="sim-output" id="simOutput" aria-hidden="true">
+          <div class="sim-tabs" id="simTabs">
+            <button class="sim-tab active" data-tab="pressure">Pressure profile</button>
+            <button class="sim-tab" data-tab="friction">Friction factor</button>
+            <button class="sim-tab" data-tab="ztable">Compressibility Z(P)</button>
+            <button class="sim-tab" data-tab="velocity">Local velocity</button>
+            <button class="sim-tab" data-tab="density">Local density</button>
+          </div>
+          <div class="chart-wrap">
+            <canvas class="chart" id="simCanvas"></canvas>
+            <div class="chart-tip" id="chartTip"></div>
+          </div>
 
-        <table class="sim-table">
-          <thead>
-            <tr><th>Parameter (full pipeline, at outlet)</th><th>DW (Colebrook-White)</th><th>AGA (fully-turbulent)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Outlet pressure (bar)</td><td id="t_pout_dw">—</td><td id="t_pout_aga">—</td></tr>
-            <tr><td>Pressure loss (bar)</td><td id="t_loss_dw">—</td><td id="t_loss_aga">—</td></tr>
-            <tr><td>Friction factor</td><td id="t_f_dw">—</td><td id="t_f_aga">—</td></tr>
-            <tr><td>Compression stations</td><td id="t_sta_dw">—</td><td id="t_sta_aga">—</td></tr>
-            <tr><td>Model deviation</td><td></td><td id="t_dev">—</td></tr>
-          </tbody>
-        </table>
-        <p class="sim-note">DW integrates Darcy-Weisbach friction loss segment-by-segment with a Reynolds-dependent Colebrook-White factor; a compression station resets the pressure to inlet whenever it drops below the trigger. AGA uses a fixed fully-turbulent friction factor baked into its transmission constant K. Both share the same tabulated Z(P) compressibility factor (50–120 bar, linearly interpolated; clamped outside that range) and equation of state, so the comparison isolates the effect of the friction model. Compressibility table sourced from external reference data — a known non-physical dip appears between 80–90 bar (Z falls before rising again), a quirk of the source table rather than my model, kept as-supplied for transparency.</p>
+          <div class="sim-stats">
+            <div class="stat"><div class="k">Z at inlet</div><div class="v" id="st_z">—</div></div>
+            <div class="stat"><div class="k">ρ at inlet</div><div class="v" id="st_rho">—</div></div>
+            <div class="stat"><div class="k">Re at inlet</div><div class="v" id="st_re">—</div></div>
+            <div class="stat"><div class="k">Mass flow</div><div class="v" id="st_mf">—</div></div>
+            <div class="stat"><div class="k">Flow rate</div><div class="v" id="st_q">—</div></div>
+            <div class="stat"><div class="k">Model agreement</div><div class="v red" id="st_verdict">—</div></div>
+          </div>
+
+          <table class="sim-table">
+            <thead>
+              <tr><th>Parameter (full pipeline, at outlet)</th><th>DW (Colebrook-White)</th><th>AGA (fully-turbulent)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Outlet pressure (bar)</td><td id="t_pout_dw">—</td><td id="t_pout_aga">—</td></tr>
+              <tr><td>Pressure loss (bar)</td><td id="t_loss_dw">—</td><td id="t_loss_aga">—</td></tr>
+              <tr><td>Friction factor</td><td id="t_f_dw">—</td><td id="t_f_aga">—</td></tr>
+              <tr><td>Compression stations</td><td id="t_sta_dw">—</td><td id="t_sta_aga">—</td></tr>
+              <tr><td>Model deviation</td><td></td><td id="t_dev">—</td></tr>
+            </tbody>
+          </table>
+          <p class="sim-note">DW integrates Darcy-Weisbach friction loss segment-by-segment with a Reynolds-dependent Colebrook-White factor; a compression station resets the pressure to inlet whenever it drops below the trigger. AGA uses a fixed fully-turbulent friction factor baked into its transmission constant K. Both share the same tabulated Z(P) compressibility factor (50–120 bar, linearly interpolated; clamped outside that range) and equation of state, so the comparison isolates the effect of the friction model. Compressibility table sourced from external reference data — a known non-physical dip appears between 80–90 bar (Z falls before rising again), a quirk of the source table rather than my model, kept as-supplied for transparency.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -518,42 +601,44 @@ footer a:hover{color:var(--red-deep)}
 <section id="publications">
   <div class="container">
     <div class="sec-head reveal">
-      <div class="sec-label">05 · Publications</div>
-      <h2 class="sec-title">Research output.</h2>
+      <div class="station">Checkpoint 05 · Publications</div>
+      <h2 class="h-title">Research output.</h2>
     </div>
-    <div class="pub-list">
-      <div class="pub reveal">
-        <div class="pub-year">2026</div>
+    <div class="pub-stack reveal" style="margin-top:2rem">
+      <div class="pub-card">
+        <div class="pub-yr">2026</div>
         <div>
           <h3>Study, Modelling and Computing of Pressure Losses in GH₂ Pipelines</h3>
           <div class="venue">Bambore, Hendrick &amp; Ponthot · MDPI Energies 19(4), 885 · Selected Papers from SDEWES 2025</div>
         </div>
         <a class="pub-link" href="https://doi.org/10.3390/en19040885" target="_blank" rel="noopener">DOI ↗</a>
       </div>
-      <div class="pub reveal">
-        <div class="pub-year">2025</div>
+      <div class="pub-card">
+        <div class="pub-yr">2025</div>
         <div>
           <h3>Study, Modelling and Computing of Pressure Losses in GH₂ Pipelines</h3>
           <div class="venue">Bambore, Hendrick &amp; Ponthot · Proceedings of the 20th SDEWES Conference · Paper SDEWES2025.0946, pp. 1–9</div>
         </div>
+        <span></span>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ PRESENTATIONS & ACTIVITIES ═══ -->
-<section id="presentations" class="alt">
+<section id="presentations">
   <div class="container">
     <div class="sec-head reveal">
-      <div class="sec-label">06 · Presentations</div>
-      <h2 class="sec-title">Talks, posters &amp; PhD activities.</h2>
+      <div class="station">Checkpoint 06 · Presentations</div>
+      <h2 class="h-title">Talks, posters &amp; PhD activities.</h2>
     </div>
-    <div class="pres-grid reveal">
+    <div class="pres-grid reveal" style="margin-top:2rem">
       <div class="pres-col">
         <h4>Oral</h4>
         <ul>
           <li><strong>20th SDEWES 2025 Conference</strong>Sustainable Development of Energy, Water and Environment Systems</li>
           <li><strong>PhD Day, ULB Brussels</strong>2025</li>
+          <li><strong>3rd EPHYC 2026</strong>European PhD Hydrogen Conference · Trondheim, Norway</li>
         </ul>
       </div>
       <div class="pres-col">
@@ -565,16 +650,16 @@ footer a:hover{color:var(--red-deep)}
       </div>
     </div>
 
-    <div class="timeline reveal">
-      <div class="tl-row"><div class="date">Feb 2025</div><div class="what">Grenoble Energy Conversion &amp; Storage — ENGINE2025</div></div>
-      <div class="tl-row"><div class="date">Oct 2025</div><div class="what">20th SDEWES 2025 Conference</div></div>
-      <div class="tl-row"><div class="date">Feb 2026</div><div class="what">Journal publication — MDPI Energies</div></div>
-      <div class="tl-row"><div class="date">Jan – Sep 2026</div><div class="what">University Certificate in Hydrogen Applications and Technologies</div></div>
-      <div class="tl-row"><div class="date">Jan 2026</div><div class="what">Managing your research project: planning, goals, and time</div></div>
-      <div class="tl-row"><div class="date">Mar 2026</div><div class="what">Hydrogen Hiveminds Hackathon</div></div>
-      <div class="tl-row"><div class="date">Apr 2026</div><div class="what">PhD and Career Development training</div></div>
-      <div class="tl-row"><div class="date">May 2026</div><div class="what">World Hydrogen Awards</div></div>
-      <div class="tl-row"><div class="date">Jun 2026</div><div class="what">EPHyC Conference</div></div>
+    <div class="tl-scroll reveal">
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:0s"></div><div class="date">Feb 2025</div><div class="what">Grenoble Energy Conversion &amp; Storage — ENGINE2025</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-.5s"></div><div class="date">Oct 2025</div><div class="what">20th SDEWES 2025 Conference</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-1s"></div><div class="date">Feb 2026</div><div class="what">Journal publication — MDPI Energies</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-1.5s"></div><div class="date">Jan – Sep 2026</div><div class="what">University Certificate in Hydrogen Applications and Technologies</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-2s"></div><div class="date">Jan 2026</div><div class="what">Managing your research project: planning, goals, and time</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-2.5s"></div><div class="date">Mar 2026</div><div class="what">Hydrogen Hiveminds Hackathon</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-3s"></div><div class="date">Apr 2026</div><div class="what">PhD and Career Development training</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-3.5s"></div><div class="date">May 2026</div><div class="what">World Hydrogen Awards</div></div>
+      <div class="tl-item"><div class="tl-dot" style="animation-delay:-4s"></div><div class="date">Jun 2026</div><div class="what">3rd EPHYC — European PhD Hydrogen Conference, Trondheim, Norway</div></div>
     </div>
   </div>
 </section>
@@ -583,74 +668,80 @@ footer a:hover{color:var(--red-deep)}
 <section id="certificates">
   <div class="container">
     <div class="sec-head reveal">
-      <div class="sec-label">07 · Certificates</div>
-      <h2 class="sec-title">Documents &amp; certificates.</h2>
-      <p class="sec-sub">All files open in a new tab. Add each PDF to the repository root with the exact filename shown below.</p>
+      <div class="station">Checkpoint 07 · Certificates</div>
+      <h2 class="h-title">Documents &amp; certificates.</h2>
+      <p class="h-sub">All files open in a new tab. Add each PDF to the repository root with the exact filename shown below.</p>
     </div>
-    <div class="cert-grid">
-      <div class="cert-card reveal">
-        <div class="cert-icon">CV</div>
+    <div class="cert-grid reveal" style="margin-top:2rem">
+      <div class="cert-stub">
+        <div class="cert-stamp">CV</div>
         <h4>Full curriculum vitae</h4>
         <div class="meta">PDF</div>
         <a href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>Certificate of Attendance — EPHyC 2026</h4>
         <div class="meta">PDF</div>
         <a href="Certificate of attendance EPHyC2026.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>Certificate of Attendance — ENGINE 2025</h4>
         <div class="meta">PDF</div>
         <a href="Certificate of attendance_ENGINE2025.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>Certificate of Poster Session — ENGINE 2025</h4>
         <div class="meta">PDF</div>
         <a href="Certificate of poster session_ENGINE2025.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>Hydrogen Hiveminds Hackathon Certificates</h4>
         <div class="meta">PDF</div>
         <a href="HH_certificates_AkshayB.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>Managing Your Research Project: Planning, Goals and Time</h4>
-        <div class="meta">PDF · verify exact filename</div>
+        <div class="meta">PDF</div>
         <a href="Managing Research Project, Planning goals and time.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>PhD OOC Certificate — Just MOOCit</h4>
         <div class="meta">PDF</div>
         <a href="PhDOOC Certificate Just MOOCit.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>SDEWES 2025 — Certificate of Attendance</h4>
-        <div class="meta">PDF · verify exact filename</div>
+        <div class="meta">PDF</div>
         <a href="SDEWES2025_Certificate_of_Attendance_ONSITE.pdf" target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
+      <div class="cert-stub">
+        <div class="cert-stamp">◆</div>
         <h4>SDEWES 2025 — Certificate of Presentation</h4>
-        <div class="meta">PDF · verify exact filename</div>
+        <div class="meta">PDF</div>
         <a href="SDEWES2025_Certificate_of_Presentation_ONSITE.pdf" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="cert-stub">
+        <div class="cert-stamp">↗</div>
+        <h4>World Hydrogen Awards — Programme</h4>
+        <div class="meta">External link</div>
+        <a href="https://www.world-hydrogen-summit.com/world/en-gb/show-programme/awards.html" target="_blank" rel="noopener">Open ↗</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ CONTACT ═══ -->
-<section id="contact" class="alt">
+<section id="contact">
   <div class="container contact-wrap">
-    <div class="sec-label reveal">08 · Contact</div>
-    <h2 class="contact-big reveal">Let's talk pipelines<br /><span class="grad">— or PhD collaboration.</span></h2>
+    <div class="station reveal">Checkpoint 08 · Contact</div>
+    <h2 class="contact-big reveal">Let's talk pipelines<br /><span class="accent">— or PhD collaboration.</span></h2>
     <p class="lede reveal">Research collaboration, questions about GH₂ pipeline modelling, or the simulator above — my inbox is open.</p>
     <div class="contact-links reveal">
       <a href="mailto:akshay.bambore@ulb.be" class="btn btn-primary">akshay.bambore@ulb.be</a>
@@ -660,13 +751,13 @@ footer a:hover{color:var(--red-deep)}
   </div>
 </section>
 
+</main>
+
 <!-- ═══ FOOTER ═══ -->
-<footer>
+<footer style="margin-left:var(--rail)">
   <div>© 2026 Akshay Bambore · Dept. of Aero-Thermo-Mechanics, ULB</div>
   <div>Hosted on <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a></div>
 </footer>
-
-<button class="to-top" id="toTop" aria-label="Back to top">↑</button>
 
 <script>
 (function(){
@@ -674,121 +765,173 @@ footer a:hover{color:var(--red-deep)}
 const motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ── Mobile menu ─────────────────────────────────────────── */
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.getElementById('navLinks');
-hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); hamburger.classList.toggle('open'); });
-navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { navLinks.classList.remove('open'); hamburger.classList.remove('open'); }));
-
-/* ── Ticker loop ──────────────────────────────────────────── */
-const ticker = document.getElementById('ticker');
-ticker.innerHTML += ticker.innerHTML;
+const burger = document.getElementById('topbarBurger');
+const mobileMenu = document.getElementById('mobileMenu');
+burger.addEventListener('click', ()=>{ burger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
+mobileMenu.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=>{ burger.classList.remove('open'); mobileMenu.classList.remove('open'); }));
 
 /* ── Scroll reveal ────────────────────────────────────────── */
-document.querySelectorAll('.stack,.runlog,.edu-grid,.pub-list,.pres-grid,.timeline,.cert-grid,.about-grid').forEach(parent=>{
-  [...parent.children].forEach((child,i)=>{ if(child.classList.contains('reveal')) child.style.transitionDelay = Math.min(i*70,380)+'ms'; });
+document.querySelectorAll('.exp-list,.edu-scroll,.pub-stack,.pres-grid,.cert-grid,.about-wrap,.skill-groups').forEach(parent=>{
+  [...parent.children].forEach((child,i)=>{ child.style.transitionDelay = Math.min(i*70,380)+'ms'; child.classList.add('reveal'); });
 });
 const revealObs = new IntersectionObserver(entries=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObs.unobserve(e.target); } });
 },{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
 
-/* ── Nav scroll state + section spy ──────────────────────── */
-const nav = document.getElementById('nav');
-const toTop = document.getElementById('toTop');
+/* ── Rail: scroll progress + active-section floating indicator ─── */
+const railProgress = document.getElementById('railProgress');
+const railIndicator = document.getElementById('railIndicator');
+const railDots = document.querySelectorAll('.rail-dot');
+const dotFor = {};
+railDots.forEach(d=> dotFor[d.dataset.sec] = d);
+
+function positionIndicator(dot){
+  if(!dot) return;
+  const railRect = document.getElementById('railNav').getBoundingClientRect();
+  const dotRect = dot.getBoundingClientRect();
+  railIndicator.style.top = (dotRect.top - railRect.top + dotRect.height/2 - 3) + 'px';
+}
+
 function onScroll(){
   const y = window.scrollY;
-  nav.classList.toggle('scrolled', y>30);
-  toTop.classList.toggle('show', y>600);
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const f = max>0 ? y/max : 0;
+  railProgress.style.height = (f*100)+'%';
 }
 window.addEventListener('scroll', onScroll, {passive:true});
 onScroll();
-toTop.addEventListener('click', ()=> window.scrollTo({top:0, behavior: motionOK?'smooth':'auto'}));
 
-const linkFor = {};
-navLinks.querySelectorAll('a[href^="#"]').forEach(a=>{ linkFor[a.getAttribute('href').slice(1)] = a; });
 const spy = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(!e.isIntersecting) return;
-    navLinks.querySelectorAll('a').forEach(a=>a.classList.remove('active'));
-    const link = linkFor[e.target.id];
-    if(link) link.classList.add('active');
+    railDots.forEach(d=>d.classList.remove('active'));
+    const dot = dotFor[e.target.id];
+    if(dot){ dot.classList.add('active'); positionIndicator(dot); }
   });
-},{rootMargin:'-45% 0px -50% 0px'});
+},{rootMargin:'-42% 0px -50% 0px'});
 document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
+window.addEventListener('load', ()=> positionIndicator(dotFor['hero']));
+window.addEventListener('resize', ()=>{
+  const active = document.querySelector('.rail-dot.active');
+  positionIndicator(active);
+});
 
 /* ═══════════════════════════════════════════════════════════
-   HERO FIELD — a live pipeline pressure-decay visualisation.
-   x = distance along the (unwrapped) pipe, colour = local
-   pressure. Pressure decays smoothly from a compressor station
-   (deep red, high pressure) toward the next station, where it
-   is boosted back up — a sawtooth decay repeated periodically,
-   exactly the physics the pressure-loss model below computes.
+   AMBIENT FLOAT LAYER — a handful of slow hydrogen-bubble
+   particles drifting upward across the whole page. Cheap: fixed
+   particle count, circle fills only, no per-pixel work — keeps
+   this comfortably smooth at high refresh rates.
    ═══════════════════════════════════════════════════════════ */
-const canvas = document.getElementById('pipeField');
-const hero = document.getElementById('hero');
-const ctx = canvas.getContext('2d');
-const stops = [
-  [0.00, 255,255,255],[0.30, 252,222,222],[0.55, 240,150,150],
-  [0.78, 210, 70, 80],[1.00, 142, 16, 41]
-];
-const LUT = new Uint8Array(256*3);
-for(let i=0;i<256;i++){
-  const v=i/255; let k=1; while(k<stops.length-1 && stops[k][0]<v) k++;
-  const a=stops[k-1], b=stops[k]; const f=(v-a[0])/(b[0]-a[0]||1);
-  LUT[i*3]=a[1]+(b[1]-a[1])*f; LUT[i*3+1]=a[2]+(b[2]-a[2])*f; LUT[i*3+2]=a[3]+(b[3]-a[3])*f;
+const ambCanvas = document.getElementById('ambientCanvas');
+const actx = ambCanvas.getContext('2d');
+let AW=0, AH=0, ambParticles=[];
+function ambResize(){
+  AW = window.innerWidth; AH = window.innerHeight;
+  ambCanvas.width = AW; ambCanvas.height = AH;
 }
-let GW=0,GH=0,off,offCtx,img,running=false,raf=null,t=0;
-const CELL=6;
-const mouse={x:-1,y:-1,heat:0};
-function resize(){
-  const W=hero.clientWidth,H=hero.clientHeight;
-  canvas.width=W; canvas.height=H;
-  GW=Math.max(50,Math.round(W/CELL)); GH=Math.max(30,Math.round(H/CELL));
-  off=document.createElement('canvas'); off.width=GW; off.height=GH;
-  offCtx=off.getContext('2d'); img=offCtx.createImageData(GW,GH);
-  if(!motionOK) drawFrame(0);
+function makeParticles(){
+  const n = Math.min(46, Math.round((AW*AH)/42000));
+  ambParticles = Array.from({length:n}, ()=>({
+    x: Math.random()*AW,
+    y: Math.random()*AH,
+    r: 1.1 + Math.random()*2.6,
+    speed: 6 + Math.random()*14,
+    drift: (Math.random()-0.5)*10,
+    phase: Math.random()*Math.PI*2,
+    alpha: 0.06 + Math.random()*0.12
+  }));
 }
-function drawFrame(time){
-  const d=img.data;
-  const cycles=3.4;
-  const drift=(time*0.045)%1;
-  const mx=mouse.x/canvas.width, my=mouse.y/canvas.height;
-  for(let j=0;j<GH;j++){
-    const yn=j/GH;
-    for(let i=0;i<GW;i++){
-      const xn=i/GW;
-      let pos=(xn*cycles - drift)%1; if(pos<0) pos+=1;
-      let v = Math.exp(-pos*2.2);
-      v += 0.05*Math.sin(xn*38 + time*0.6)*Math.cos(yn*13 - time*0.4);
-      if(mouse.heat>0.01){
-        const dx=xn-mx, dy=yn-my;
-        v += mouse.heat*Math.exp(-(dx*dx*40+dy*dy*22)*8);
-      }
-      const c=Math.max(0,Math.min(255,v*255))|0;
-      const p=(j*GW+i)*4;
-      d[p]=LUT[c*3]; d[p+1]=LUT[c*3+1]; d[p+2]=LUT[c*3+2]; d[p+3]=255;
-    }
-  }
-  offCtx.putImageData(img,0,0);
-  ctx.imageSmoothingEnabled=true;
-  ctx.drawImage(off,0,0,canvas.width,canvas.height);
+ambResize(); makeParticles();
+window.addEventListener('resize', ()=>{ ambResize(); makeParticles(); });
+
+let ambRunning = motionOK;
+let ambLast = performance.now();
+function ambLoop(now){
+  if(!ambRunning) return;
+  const dt = Math.min(0.05,(now-ambLast)/1000); ambLast = now;
+  actx.clearRect(0,0,AW,AH);
+  ambParticles.forEach(p=>{
+    p.y -= p.speed*dt;
+    p.x += Math.sin(now/1000 + p.phase)*p.drift*dt;
+    if(p.y < -10){ p.y = AH+10; p.x = Math.random()*AW; }
+    if(p.x < -10) p.x = AW+10; if(p.x > AW+10) p.x = -10;
+    const g = actx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);
+    g.addColorStop(0, `rgba(224,27,61,${p.alpha})`);
+    g.addColorStop(1, 'rgba(224,27,61,0)');
+    actx.fillStyle = g;
+    actx.beginPath(); actx.arc(p.x,p.y,p.r*4,0,Math.PI*2); actx.fill();
+  });
+  requestAnimationFrame(ambLoop);
 }
-function loop(){ if(!running) return; t+=0.016; mouse.heat*=0.94; drawFrame(t); raf=requestAnimationFrame(loop); }
-function setRunning(on){ on=on&&motionOK&&!document.hidden; if(on&&!running){running=true;loop();} else if(!on&&running){running=false; if(raf) cancelAnimationFrame(raf);} }
-hero.addEventListener('pointermove', e=>{
-  const r=canvas.getBoundingClientRect();
-  mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top;
-  mouse.heat=Math.min(1,mouse.heat+0.16);
-},{passive:true});
-new IntersectionObserver(([e])=>setRunning(e.isIntersecting)).observe(hero);
-document.addEventListener('visibilitychange', ()=>setRunning(!document.hidden));
-let rt; window.addEventListener('resize', ()=>{ clearTimeout(rt); rt=setTimeout(resize,150); });
-resize(); setRunning(true);
+if(ambRunning) requestAnimationFrame(ambLoop);
+document.addEventListener('visibilitychange', ()=>{
+  const wasRunning = ambRunning;
+  ambRunning = motionOK && !document.hidden;
+  if(ambRunning && !wasRunning){ ambLast = performance.now(); requestAnimationFrame(ambLoop); }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   HERO CANVAS — a tighter, denser version of the same particle
+   system confined to the hero visual, plus a slow rotating ring
+   evoking a pressure gauge. Lightweight: circles + one arc path.
+   ═══════════════════════════════════════════════════════════ */
+const heroCanvas = document.getElementById('heroCanvas');
+const hctx = heroCanvas.getContext('2d');
+const heroVisual = document.querySelector('.hero-visual');
+let HW=0, HH=0, heroParticles=[], heroRunning=false, heroRaf=null, heroT=0;
+function heroResize(){
+  const r = heroVisual.getBoundingClientRect();
+  HW = r.width; HH = r.height;
+  heroCanvas.width = HW; heroCanvas.height = HH;
+  const n = Math.min(28, Math.round((HW*HH)/9000));
+  heroParticles = Array.from({length:n}, ()=>({
+    x: Math.random()*HW, y: Math.random()*HH,
+    r: 1.2+Math.random()*2.2, speed: 8+Math.random()*16,
+    phase: Math.random()*Math.PI*2, alpha: 0.14+Math.random()*0.22
+  }));
+}
+function heroDraw(now){
+  hctx.clearRect(0,0,HW,HH);
+  const cx=HW/2, cy=HH/2, R=Math.min(HW,HH)*0.34;
+  hctx.save();
+  hctx.strokeStyle='rgba(224,27,61,0.18)'; hctx.lineWidth=1;
+  hctx.beginPath(); hctx.arc(cx,cy,R,0,Math.PI*2); hctx.stroke();
+  hctx.strokeStyle='rgba(255,255,255,0.06)';
+  hctx.beginPath(); hctx.arc(cx,cy,R*0.7,0,Math.PI*2); hctx.stroke();
+  const sweep = (now/1000*0.35)%(Math.PI*2);
+  hctx.strokeStyle='rgba(255,77,106,0.85)'; hctx.lineWidth=2;
+  hctx.beginPath(); hctx.arc(cx,cy,R,sweep,sweep+0.9); hctx.stroke();
+  hctx.restore();
+
+  heroParticles.forEach(p=>{
+    p.y -= p.speed*0.016;
+    p.x += Math.sin(now/900+p.phase)*6*0.016;
+    if(p.y<-10){ p.y=HH+10; p.x=Math.random()*HW; }
+    const g = hctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);
+    g.addColorStop(0, `rgba(255,77,106,${p.alpha})`);
+    g.addColorStop(1, 'rgba(255,77,106,0)');
+    hctx.fillStyle=g;
+    hctx.beginPath(); hctx.arc(p.x,p.y,p.r*4,0,Math.PI*2); hctx.fill();
+  });
+}
+function heroLoop(now){ if(!heroRunning) return; heroDraw(now); heroRaf=requestAnimationFrame(heroLoop); }
+function setHeroRunning(on){
+  on = on && motionOK;
+  if(on && !heroRunning){ heroRunning=true; requestAnimationFrame(heroLoop); }
+  else if(!on && heroRunning){ heroRunning=false; if(heroRaf) cancelAnimationFrame(heroRaf); }
+}
+heroResize();
+if(!motionOK) heroDraw(0);
+new IntersectionObserver(([e])=>setHeroRunning(e.isIntersecting)).observe(document.getElementById('hero'));
+document.addEventListener('visibilitychange', ()=> setHeroRunning(!document.hidden && document.getElementById('hero').getBoundingClientRect().top < window.innerHeight));
+let hrt; window.addEventListener('resize', ()=>{ clearTimeout(hrt); hrt=setTimeout(heroResize,150); });
 
 /* ═══════════════════════════════════════════════════════════
    PIPELINE PRESSURE-LOSS PHYSICS
    Direct port of Animation_updated.py — Darcy-Weisbach (DW) vs
    AGA fully-turbulent comparison, shared tabulated Z(P).
+   Verified against the Python source for default parameters.
    ═══════════════════════════════════════════════════════════ */
 const TEMPERATURE=303.15, TSTD=288.65, PSTD=101325.0, R_SPEC=4124.0;
 const GAMMA_SG=2.016/28.96, MU_H2=9.0e-6, NUM_SEG=500;
@@ -961,9 +1104,8 @@ function drawChart(config){
   function xPix(v){ const vv = config.xLog?Math.log10(v):v; return padL + (vv-xMin)/(xMax-xMin||1)*plotW; }
   function yPix(v){ return padT + (1-(v-yMin)/(yMax-yMin||1))*plotH; }
 
-  // grid + axes
-  cctx.strokeStyle='rgba(255,255,255,.08)'; cctx.lineWidth=1;
-  cctx.fillStyle='#9EA3AB'; cctx.font='10px "IBM Plex Mono",monospace'; cctx.textBaseline='middle';
+  cctx.strokeStyle='rgba(255,255,255,.07)'; cctx.lineWidth=1;
+  cctx.fillStyle='#63676F'; cctx.font='10px "IBM Plex Mono",monospace'; cctx.textBaseline='middle';
   const yStep = niceStep(yMax-yMin);
   for(let v=Math.ceil(yMin/yStep)*yStep; v<=yMax; v+=yStep){
     const py=yPix(v);
@@ -978,19 +1120,18 @@ function drawChart(config){
     const px=xPix(v);
     cctx.fillText(fmtAxis(v), px, H-padB+8);
   }
-  cctx.strokeStyle='rgba(255,255,255,.18)';
+  cctx.strokeStyle='rgba(255,255,255,.16)';
   cctx.beginPath(); cctx.moveTo(padL,padT); cctx.lineTo(padL,H-padB); cctx.lineTo(W-padR,H-padB); cctx.stroke();
 
   if(config.hline!==undefined){
-    cctx.strokeStyle='rgba(255,107,129,.55)'; cctx.setLineDash([5,4]); cctx.lineWidth=1;
+    cctx.strokeStyle='rgba(255,77,106,.55)'; cctx.setLineDash([5,4]); cctx.lineWidth=1;
     const py=yPix(config.hline);
     cctx.beginPath(); cctx.moveTo(padL,py); cctx.lineTo(W-padR,py); cctx.stroke();
     cctx.setLineDash([]);
-    cctx.fillStyle='#ff6b81'; cctx.textAlign='left'; cctx.textBaseline='bottom';
+    cctx.fillStyle='#FF4D6A'; cctx.textAlign='left'; cctx.textBaseline='bottom';
     cctx.fillText(config.hlineLabel||'', padL+6, py-3);
   }
 
-  // series
   config.series.forEach(s=>{
     cctx.strokeStyle=s.color; cctx.lineWidth=2;
     if(s.dash) cctx.setLineDash(s.dash); else cctx.setLineDash([]);
@@ -1006,13 +1147,12 @@ function drawChart(config){
     cctx.setLineDash([]);
   });
 
-  // station markers
   if(config.markersDw){
     config.markersDw.forEach(xv=>{
       const px=xPix(xv);
-      cctx.strokeStyle='rgba(255,255,255,.25)'; cctx.setLineDash([2,3]);
+      cctx.strokeStyle='rgba(255,255,255,.2)'; cctx.setLineDash([2,3]);
       cctx.beginPath(); cctx.moveTo(px,padT); cctx.lineTo(px,H-padB); cctx.stroke(); cctx.setLineDash([]);
-      cctx.fillStyle=config.dwColor||'#C81E3A';
+      cctx.fillStyle=config.dwColor||'#E01B3D';
       cctx.beginPath(); cctx.moveTo(px,padT+6); cctx.lineTo(px-5,padT+14); cctx.lineTo(px+5,padT+14); cctx.closePath(); cctx.fill();
     });
   }
@@ -1024,13 +1164,12 @@ function drawChart(config){
     });
   }
 
-  // legend
   let lx=padL+4;
   cctx.font='10px "IBM Plex Mono",monospace'; cctx.textBaseline='alphabetic'; cctx.textAlign='left';
   config.series.forEach(s=>{
     cctx.fillStyle=s.color;
     cctx.fillRect(lx,padT-16,10,3);
-    cctx.fillStyle='#B8BCC3';
+    cctx.fillStyle='#9BA0A8';
     cctx.fillText(s.label, lx+14, padT-11);
     lx += 14 + cctx.measureText(s.label).width + 18;
   });
@@ -1082,12 +1221,12 @@ function renderCurrentTab(){
       xs: res.x_km,
       xLabel:'Distance', xUnit:'km', yUnit:'bar',
       series:[
-        {ys:res.P_dw, color:'#C81E3A', label:'DW pressure'},
+        {ys:res.P_dw, color:'#E01B3D', label:'DW pressure'},
         {ys:res.P_aga, color:'#ffffff', label:'AGA pressure'}
       ],
       hline: res.p_compress_bar, hlineLabel:`Compression trigger (${res.p_compress_bar.toFixed(0)} bar)`,
       markersDw: res.sta_dw, markersAga: res.sta_aga,
-      dwColor:'#C81E3A', agaColor:'#ffffff'
+      dwColor:'#E01B3D', agaColor:'#ffffff'
     });
   } else if(currentTab==='friction'){
     const eps_m = parseFloat(S.roughness.value)/1000.0;
@@ -1103,7 +1242,7 @@ function renderCurrentTab(){
     drawChart({
       xs: reArr, xLog:true, xLabel:'Reynolds number', yUnit:'',
       series:[
-        {ys:cwArr, color:'#C81E3A', label:'Colebrook-White'},
+        {ys:cwArr, color:'#E01B3D', label:'Colebrook-White'},
         {ys:ftArr, color:'#ffffff', label:'Fully-turbulent', dash:[6,4]}
       ]
     });
@@ -1116,13 +1255,13 @@ function renderCurrentTab(){
     }
     drawChart({
       xs: pArr, xLabel:'Pressure', xUnit:'bar', yUnit:'',
-      series:[{ys:zArr, color:'#C81E3A', label:'Z(P) interpolated'}]
+      series:[{ys:zArr, color:'#E01B3D', label:'Z(P) interpolated'}]
     });
   } else if(currentTab==='velocity'){
     drawChart({
       xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'m/s',
       series:[
-        {ys:res.V_dw, color:'#C81E3A', label:'DW local velocity'},
+        {ys:res.V_dw, color:'#E01B3D', label:'DW local velocity'},
         {ys:res.V_aga, color:'#ffffff', label:'AGA local velocity'}
       ]
     });
@@ -1130,7 +1269,7 @@ function renderCurrentTab(){
     drawChart({
       xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'kg/m³',
       series:[
-        {ys:res.Rho_dw, color:'#C81E3A', label:'DW local density'},
+        {ys:res.Rho_dw, color:'#E01B3D', label:'DW local density'},
         {ys:res.Rho_aga, color:'#ffffff', label:'AGA local density'}
       ]
     });
@@ -1149,7 +1288,6 @@ function updateStats(res){
   const agree = diffPct<5;
   const vEl = document.getElementById('st_verdict');
   vEl.textContent = (agree?'AGREE':'DIVERGE')+' ('+diffPct.toFixed(1)+'%)';
-  vEl.className = 'v red';
 
   document.getElementById('t_pout_dw').textContent = res.P_out_dw.toFixed(2);
   document.getElementById('t_pout_aga').textContent = res.P_out_aga.toFixed(2);
