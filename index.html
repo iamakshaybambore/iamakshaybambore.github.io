@@ -48,44 +48,36 @@ button{font:inherit}
 /* ============================================================ AMBIENT FLOAT LAYER */
 #floatLayer{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-/* ============================================================ RAIL NAV */
-.rail{position:fixed;top:0;left:0;bottom:0;width:var(--rail);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1.3rem 0;border-right:1px solid var(--line);background:rgba(10,11,13,.7);backdrop-filter:blur(10px)}
-.rail-mark{width:38px;height:38px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:.72rem;color:#fff;box-shadow:0 0 22px var(--red-glow)}
-.rail-nav{position:relative;display:flex;flex-direction:column;gap:1.6rem;align-items:center}
-.rail-indicator{position:absolute;left:50%;transform:translate(-50%,0);width:6px;height:6px;background:var(--red);border-radius:50%;box-shadow:0 0 10px var(--red-glow);transition:top .45s var(--ease);top:0;pointer-events:none}
-.rail-dot{width:6px;height:6px;border-radius:50%;background:var(--line-2);cursor:pointer;position:relative;transition:background .25s;flex:0 0 auto}
-.rail-dot:hover{background:var(--muted)}
-.rail-dot.active{background:transparent}
-.rail-dot .tip{position:absolute;left:20px;top:50%;transform:translateY(-50%) translateX(-6px);font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;background:var(--bg-3);border:1px solid var(--line);padding:.3rem .6rem;border-radius:3px}
-.rail-dot:hover .tip{opacity:1;transform:translateY(-50%) translateX(0)}
-.rail-foot{display:flex;flex-direction:column;align-items:center;gap:1rem}
-.rail-progress{width:2px;height:70px;background:var(--line);position:relative;border-radius:2px;overflow:hidden}
-.rail-progress span{position:absolute;bottom:0;left:0;width:100%;height:0%;background:linear-gradient(180deg,var(--red-2),var(--red-deep))}
-.rail-cv{writing-mode:vertical-rl;text-orientation:mixed;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);padding:.7rem .45rem;border-radius:3px;transition:color .2s,border-color .2s}
-.rail-cv:hover{color:var(--red-2);border-color:var(--red)}
-
-.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:300;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;background:rgba(10,11,13,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.topbar .rail-mark{width:32px;height:32px;font-size:.62rem}
-.topbar-burger{width:38px;height:38px;border:1px solid var(--line-2);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:transparent}
-.topbar-burger span{width:16px;height:1.5px;background:var(--ink);transition:transform .3s,opacity .3s}
-.topbar-burger.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
-.topbar-burger.open span:nth-child(2){opacity:0}
-.topbar-burger.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
-.mobile-menu{display:none;position:fixed;top:58px;left:0;right:0;z-index:299;background:rgba(10,11,13,.98);border-bottom:1px solid var(--line);padding:1rem 1.3rem 1.4rem;flex-direction:column;gap:.2rem}
-.mobile-menu.open{display:flex}
-.mobile-menu a{font-family:var(--mono);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.75rem 0;border-bottom:1px solid var(--line)}
-.mobile-menu a:last-child{border-bottom:0}
-.mobile-menu a:hover{color:var(--red-2)}
+/* ============================================================ TOP NAV */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:.95rem clamp(1.2rem,4vw,2.6rem);background:rgba(10,11,13,.78);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-progress{position:absolute;left:0;bottom:-1px;height:2px;width:0%;background:linear-gradient(90deg,var(--red-2),var(--red-deep));transition:width .12s linear}
+.nav-brand{display:flex;align-items:center;gap:.6rem}
+.rail-mark{width:34px;height:34px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:.68rem;color:#fff;box-shadow:0 0 22px var(--red-glow);flex:0 0 auto}
+.nav-brand-name{font-family:var(--display);font-weight:700;font-size:.92rem;color:#fff}
+.topnav-links{display:flex;gap:1.5rem;align-items:center;list-style:none}
+.topnav-links a{font-family:var(--mono);font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:#fff;position:relative;padding-bottom:.25rem;transition:color .2s}
+.topnav-links a::after{content:'';position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--red-2);transition:width .3s var(--ease)}
+.topnav-links a:hover::after,.topnav-links a.active::after{width:100%}
+.topnav-links a.active{color:var(--red-2)}
+.topnav-links a.rail-cv{border:1px solid var(--red);color:#fff;padding:.42rem 1rem;border-radius:4px;transition:background .2s,border-color .2s}
+.topnav-links a.rail-cv::after{display:none}
+.topnav-links a.rail-cv:hover{background:var(--red)}
+.topnav-burger{display:none;width:38px;height:38px;border:1px solid var(--line-2);border-radius:8px;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:transparent}
+.topnav-burger span{width:16px;height:1.5px;background:#fff;transition:transform .3s,opacity .3s}
+.topnav-burger.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+.topnav-burger.open span:nth-child(2){opacity:0}
+.topnav-burger.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
 
 @media (max-width:860px){
-  .rail{display:none}
-  .topbar{display:flex}
-  main{margin-left:0!important}
-  body{padding-top:58px}
+  .topnav-links{display:none;position:fixed;top:58px;left:0;right:0;flex-direction:column;align-items:flex-start;gap:.2rem;background:rgba(10,11,13,.98);backdrop-filter:blur(14px);padding:1rem 1.3rem 1.4rem;border-bottom:1px solid var(--line);z-index:299}
+  .topnav-links.open{display:flex}
+  .topnav-links a{width:100%;padding:.7rem 0;border-bottom:1px solid var(--line)}
+  .topnav-links a.rail-cv{border:1px solid var(--red);margin-top:.4rem;text-align:center}
+  .topnav-burger{display:flex}
 }
 
 /* ============================================================ LAYOUT */
-main{margin-left:var(--rail);position:relative;z-index:1}
+main{position:relative;z-index:1;padding-top:66px}
 .container{max-width:1120px;margin:0 auto;padding:0 clamp(1.3rem,4.5vw,3.2rem)}
 section{position:relative;padding:clamp(4.5rem,10vh,7rem) 0}
 .station{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-2);margin-bottom:.9rem;display:flex;align-items:center;gap:.8rem}
@@ -120,6 +112,7 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
 .gauge-1{top:8%;left:2%;animation-delay:0s}
 .gauge-2{bottom:12%;right:0;animation-delay:-2s}
 .gauge-3{top:44%;right:6%;animation-delay:-4s}
+.gauge-4{top:26%;left:20%;animation-delay:-3s}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 .hero-ghost{position:absolute;font-family:var(--display);font-weight:800;font-size:clamp(9rem,22vw,15rem);color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.06);letter-spacing:-.03em;user-select:none;z-index:-1}
 @media (max-width:940px){
@@ -283,42 +276,27 @@ footer a:hover{color:var(--red-2)}
 
 <div id="floatLayer"><canvas id="ambientCanvas"></canvas></div>
 
-<!-- ═══ RAIL NAV (desktop) ═══ -->
-<nav class="rail" id="rail">
-  <a class="rail-mark" href="#hero">H₂</a>
-  <div class="rail-nav" id="railNav">
-    <div class="rail-indicator" id="railIndicator"></div>
-    <a class="rail-dot active" href="#hero" data-sec="hero"><span class="tip">Home</span></a>
-    <a class="rail-dot" href="#about" data-sec="about"><span class="tip">About</span></a>
-    <a class="rail-dot" href="#experience" data-sec="experience"><span class="tip">Experience</span></a>
-    <a class="rail-dot" href="#education" data-sec="education"><span class="tip">Education</span></a>
-    <a class="rail-dot" href="#simulator" data-sec="simulator"><span class="tip">Simulator</span></a>
-    <a class="rail-dot" href="#publications" data-sec="publications"><span class="tip">Publications</span></a>
-    <a class="rail-dot" href="#presentations" data-sec="presentations"><span class="tip">Presentations</span></a>
-    <a class="rail-dot" href="#certificates" data-sec="certificates"><span class="tip">Certificates</span></a>
-    <a class="rail-dot" href="#contact" data-sec="contact"><span class="tip">Contact</span></a>
+<!-- ═══ TOP NAV ═══ -->
+<nav class="topnav" id="topnav">
+  <div class="nav-brand">
+    <a class="rail-mark" href="#hero">H₂</a>
+    <span class="nav-brand-name">Akshay Bambore</span>
   </div>
-  <div class="rail-foot">
-    <div class="rail-progress"><span id="railProgress"></span></div>
+  <div class="topnav-links" id="topnavLinks">
+    <a href="#hero" data-sec="hero" class="active">Home</a>
+    <a href="#about" data-sec="about">About</a>
+    <a href="#experience" data-sec="experience">Experience</a>
+    <a href="#education" data-sec="education">Education</a>
+    <a href="#simulator" data-sec="simulator">Simulator</a>
+    <a href="#publications" data-sec="publications">Publications</a>
+    <a href="#presentations" data-sec="presentations">Presentations</a>
+    <a href="#certificates" data-sec="certificates">Certificates</a>
+    <a href="#contact" data-sec="contact">Contact</a>
     <a class="rail-cv" href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener">CV ↗</a>
   </div>
+  <button class="topnav-burger" id="topnavBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-progress" id="navProgress"></div>
 </nav>
-
-<!-- ═══ TOP BAR (mobile) ═══ -->
-<div class="topbar" id="topbar">
-  <a class="rail-mark" href="#hero">H₂</a>
-  <button class="topbar-burger" id="topbarBurger" aria-label="Menu"><span></span><span></span><span></span></button>
-</div>
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#about">About</a>
-  <a href="#experience">Experience</a>
-  <a href="#education">Education</a>
-  <a href="#simulator">Simulator</a>
-  <a href="#publications">Publications</a>
-  <a href="#presentations">Presentations</a>
-  <a href="#certificates">Certificates</a>
-  <a href="#contact">Contact</a>
-</div>
 
 <main>
 
@@ -343,7 +321,7 @@ footer a:hover{color:var(--red-2)}
       <div class="hero-ghost">H₂</div>
       <canvas id="heroCanvas"></canvas>
       <div class="gauge-float gauge-1"><div class="k">Inlet pressure</div><div class="v"><span>90</span> bar</div></div>
-      <div class="gauge-float gauge-1"><div class="k">Outlet pressure</div><div class="v"><span>55</span> bar</div></div>
+      <div class="gauge-float gauge-4"><div class="k">Outlet pressure</div><div class="v"><span>55</span> bar</div></div>
       <div class="gauge-float gauge-2"><div class="k">Compressibility Z</div><div class="v"><span>1.065</span></div></div>
       <div class="gauge-float gauge-3"><div class="k">Model deviation</div><div class="v"><span>0.3</span>%</div></div>
     </div>
@@ -360,7 +338,7 @@ footer a:hover{color:var(--red-2)}
   <span class="spec-pill" style="animation-delay:-2s">CFD</span>
   <span class="spec-pill" style="animation-delay:-2.4s">Python</span>
   <span class="spec-pill" style="animation-delay:-2.8s">Z(P) Interpolation</span>
-  <span class="spec-pill" style="animation-delay:-3.2s">Test Bench Validation</span>
+  <span class="spec-pill" style="animation-delay:-3.2s">Interactive Simulator</span>
 </div>
 
 <!-- ═══ ABOUT ═══ -->
@@ -368,7 +346,7 @@ footer a:hover{color:var(--red-2)}
   <div class="container">
     <div class="reveal">
       <div class="station">Checkpoint 01 · About</div>
-      <h2 class="h-title">From governing equations to a validated pressure loss models.</h2>
+      <h2 class="h-title">From governing equations to an interactive simulator.</h2>
     </div>
     <div class="about-wrap" style="margin-top:2.4rem">
       <div class="portrait-stack reveal">
@@ -378,11 +356,10 @@ footer a:hover{color:var(--red-2)}
       </div>
       <div class="about-text reveal">
         <p>I'm a PhD researcher in the <strong>Department of Aero-Thermo-Mechanics</strong> at the <strong>Université libre de Bruxelles (ULB)</strong>, working on pressure-loss modelling for gaseous hydrogen (GH₂) pipelines. My work covers 2D and 3D pipe-flow CFD, development of a wall erosion model, and how a pipeline's internal surface condition degrades over years or decades of operation under hydrogen embrittlement and pressure cycling.</p>
-        <p>Alongside the modelling, I analyse external experimental data and work on development and validation of a dedicated <strong>GH₂ pipe pressure-loss test bench</strong>, so the numerical models are checked against real measurements rather than theory alone.</p>
+        <p>Alongside the modelling, I built the browser-based pressure-loss simulator below — a working comparison of the Darcy-Weisbach and AGA models, recomputed live as you change the pipeline parameters. A dedicated GH₂ pipe pressure-loss test bench to validate these models against physical measurements is currently at the planning stage, not yet built.</p>
         <p>Before the PhD, I completed a Master's in Aerospace Engineering at <strong>Sapienza University of Rome</strong> and a Bachelor's in Mechanical Engineering at <strong>VTU, Belgaum</strong>, then spent three years at <strong>Tata Consultancy Services</strong> as a manual software tester, working on validation rules, workflow automation, and defect tracking for enterprise Salesforce deployments.</p>
         <div class="about-links">
           <a class="chip" href="mailto:akshay.bambore@ulb.be">Email</a>
-          <a class="chip" href="tel:+32497751365">Phone</a>
           <a class="chip" href="https://brite-research.be/akshay-bambore" target="_blank" rel="noopener">BRITE research group</a>
           <a class="chip" href="AK_PhD_Researcher_CV.pdf" target="_blank" rel="noopener">Full CV</a>
         </div>
@@ -403,21 +380,15 @@ footer a:hover{color:var(--red-2)}
         </div>
       </div>
       <div class="skill-group">
-        <div class="g-label">Experimental</div>
+        <div class="g-label">Simulation Tools</div>
         <div class="skill-tags">
-          <span class="skill-tag">GH₂ test bench validation</span><span class="skill-tag">Laser diffraction (HELOS-VARIO/KR)</span><span class="skill-tag">Spray control systems</span>
+          <span class="skill-tag">Browser-based DW/AGA simulator</span><span class="skill-tag">Laser diffraction (HELOS-VARIO/KR)</span><span class="skill-tag">Spray control systems</span>
         </div>
       </div>
       <div class="skill-group">
         <div class="g-label">Programming</div>
         <div class="skill-tags">
           <span class="skill-tag">Python</span><span class="skill-tag">NumPy</span><span class="skill-tag">Matplotlib</span><span class="skill-tag">PyQt5</span>
-        </div>
-      </div>
-      <div class="skill-group">
-        <div class="g-label">Industry Tools</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Salesforce</span><span class="skill-tag">Azure DevOps</span>
         </div>
       </div>
       <div class="skill-group">
@@ -442,12 +413,12 @@ footer a:hover{color:var(--red-2)}
       <div class="exp-card reveal">
         <div class="exp-num">01</div>
         <div class="exp-date">2024 — Present</div>
-        <h3>PhD Researcher</h3>
-        <div class="role">Dept. of Aero-Thermo-Mechanics, ULB · Study, Modelling and Computing Pressure Losses in Hydrogen Pipelines</div>
+        <h3>Joint PhD Researcher</h3>
+        <div class="role">Cotutelle agreement — Université libre de Bruxelles (Dept. of Aero-Thermo-Mechanics) &amp; University of Liège · Study, Modelling and Computing Pressure Losses in Hydrogen Pipelines</div>
         <ul>
           <li>Determine total pressure losses in GH₂ pipelines and their evolution over years/decades of operation as internal surface condition degrades from hydrogen embrittlement and erosion.</li>
           <li>Run CFD and mathematical models for 2D and 3D pipe flow and pressure loss; develop a wall erosion model.</li>
-          <li>Analyse external experimental data and support development and validation of a GH₂ pipe pressure-loss test bench.</li>
+          <li>Built a browser-based simulator comparing Darcy-Weisbach and AGA pressure-loss predictions in real time; a dedicated GH₂ pressure-loss test bench for physical validation is currently at the planning stage.</li>
         </ul>
         <p class="exp-fund">Funded by the Win4Excellence project — SPW Economy Employment Research (Walloon Region) and the Walloon Region Recovery Plan, agreement no. 2310142.</p>
       </div>
@@ -487,11 +458,18 @@ footer a:hover{color:var(--red-2)}
     </div>
     <div class="edu-scroll reveal" style="margin-top:2rem">
       <div class="edu-card">
-        <div class="edu-ghost">24</div>
-        <div class="yr">2024 — Present</div>
-        <h3>PhD, Aero-Thermo-Mechanics</h3>
-        <div class="inst">Université libre de Bruxelles · Belgium</div>
-        <p>Pressure-loss modelling and wall erosion modelling for GH₂ pipelines, with test-bench validation.</p>
+        <div class="edu-ghost">12</div>
+        <div class="yr">2012 — 2016</div>
+        <h3>GM Institute of Technology, Davangere</h3>
+        <div class="inst">Karnataka · India</div>
+        <p>Bachelor of Mechanical Engineering coursework — core thermodynamics, fluid mechanics, and machine design.</p>
+      </div>
+      <div class="edu-card">
+        <div class="edu-ghost">12</div>
+        <div class="yr">2012 — 2016</div>
+        <h3>Visvesvaraya Technological University (VTU)</h3>
+        <div class="inst">Belgaum · India</div>
+        <p>Affiliating university — Bachelor of Mechanical Engineering degree awarded.</p>
       </div>
       <div class="edu-card">
         <div class="edu-ghost">17</div>
@@ -499,13 +477,6 @@ footer a:hover{color:var(--red-2)}
         <h3>Masters in Aerospace Engineering</h3>
         <div class="inst">Sapienza University of Rome · Italy</div>
         <p>Aerospace engineering fundamentals with a focus on fluid dynamics and propulsion.</p>
-      </div>
-      <div class="edu-card">
-        <div class="edu-ghost">12</div>
-        <div class="yr">2012 — 2016</div>
-        <h3>Bachelors of Mechanical Engineering</h3>
-        <div class="inst">VTU Belgaum · India</div>
-        <p>Core mechanical engineering: thermodynamics, fluid mechanics, and machine design.</p>
       </div>
     </div>
   </div>
@@ -745,7 +716,6 @@ footer a:hover{color:var(--red-2)}
     <p class="lede reveal">Research collaboration, questions about GH₂ pipeline modelling, or the simulator above — my inbox is open.</p>
     <div class="contact-links reveal">
       <a href="mailto:akshay.bambore@ulb.be" class="btn btn-primary">akshay.bambore@ulb.be</a>
-      <a href="tel:+32497751365" class="btn btn-outline">+32 497 75 13 65</a>
       <a href="https://brite-research.be/akshay-bambore" target="_blank" rel="noopener" class="btn btn-outline">BRITE research group</a>
     </div>
   </div>
@@ -754,7 +724,7 @@ footer a:hover{color:var(--red-2)}
 </main>
 
 <!-- ═══ FOOTER ═══ -->
-<footer style="margin-left:var(--rail)">
+<footer>
   <div>© 2026 Akshay Bambore · Dept. of Aero-Thermo-Mechanics, ULB</div>
   <div>Hosted on <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a></div>
 </footer>
@@ -764,11 +734,11 @@ footer a:hover{color:var(--red-2)}
 'use strict';
 const motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── Mobile menu ─────────────────────────────────────────── */
-const burger = document.getElementById('topbarBurger');
-const mobileMenu = document.getElementById('mobileMenu');
-burger.addEventListener('click', ()=>{ burger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
-mobileMenu.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=>{ burger.classList.remove('open'); mobileMenu.classList.remove('open'); }));
+/* ── Top nav: mobile toggle ──────────────────────────────── */
+const burger = document.getElementById('topnavBurger');
+const topnavLinks = document.getElementById('topnavLinks');
+burger.addEventListener('click', ()=>{ burger.classList.toggle('open'); topnavLinks.classList.toggle('open'); });
+topnavLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=>{ burger.classList.remove('open'); topnavLinks.classList.remove('open'); }));
 
 /* ── Scroll reveal ────────────────────────────────────────── */
 document.querySelectorAll('.exp-list,.edu-scroll,.pub-stack,.pres-grid,.cert-grid,.about-wrap,.skill-groups').forEach(parent=>{
@@ -779,25 +749,17 @@ const revealObs = new IntersectionObserver(entries=>{
 },{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
 
-/* ── Rail: scroll progress + active-section floating indicator ─── */
-const railProgress = document.getElementById('railProgress');
-const railIndicator = document.getElementById('railIndicator');
-const railDots = document.querySelectorAll('.rail-dot');
-const dotFor = {};
-railDots.forEach(d=> dotFor[d.dataset.sec] = d);
-
-function positionIndicator(dot){
-  if(!dot) return;
-  const railRect = document.getElementById('railNav').getBoundingClientRect();
-  const dotRect = dot.getBoundingClientRect();
-  railIndicator.style.top = (dotRect.top - railRect.top + dotRect.height/2 - 3) + 'px';
-}
+/* ── Top nav: scroll progress + active-section highlight ─── */
+const navProgress = document.getElementById('navProgress');
+const navLinks = document.querySelectorAll('.topnav-links a[data-sec]');
+const linkFor = {};
+navLinks.forEach(a=> linkFor[a.dataset.sec] = a);
 
 function onScroll(){
   const y = window.scrollY;
   const max = document.documentElement.scrollHeight - window.innerHeight;
   const f = max>0 ? y/max : 0;
-  railProgress.style.height = (f*100)+'%';
+  navProgress.style.width = (f*100)+'%';
 }
 window.addEventListener('scroll', onScroll, {passive:true});
 onScroll();
@@ -805,17 +767,12 @@ onScroll();
 const spy = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(!e.isIntersecting) return;
-    railDots.forEach(d=>d.classList.remove('active'));
-    const dot = dotFor[e.target.id];
-    if(dot){ dot.classList.add('active'); positionIndicator(dot); }
+    navLinks.forEach(a=>a.classList.remove('active'));
+    const link = linkFor[e.target.id];
+    if(link) link.classList.add('active');
   });
 },{rootMargin:'-42% 0px -50% 0px'});
 document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
-window.addEventListener('load', ()=> positionIndicator(dotFor['hero']));
-window.addEventListener('resize', ()=>{
-  const active = document.querySelector('.rail-dot.active');
-  positionIndicator(active);
-});
 
 /* ═══════════════════════════════════════════════════════════
    AMBIENT FLOAT LAYER — a handful of slow hydrogen-bubble
