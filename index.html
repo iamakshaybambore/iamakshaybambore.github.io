@@ -4,38 +4,22 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Akshay Bambore — PhD Researcher, Hydrogen Pipeline Systems</title>
-<meta name="description" content="PhD researcher at Université libre de Bruxelles modelling pressure losses in gaseous hydrogen (GH2) pipelines — CFD, wall erosion, and hydrogen embrittlement degradation." />
+<meta name="description" content="PhD researcher at Université libre de Bruxelles modelling pressure losses in gaseous hydrogen (GH2) pipelines CFD, wall erosion, and hydrogen embrittlement degradation." />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Akshay Bambore — PhD Researcher, Hydrogen Pipeline Systems" />
-<meta property="og:description" content="Modelling pressure losses in GH2 pipelines — CFD, Darcy-Weisbach vs AGA comparison, hydrogen embrittlement degradation." />
+<meta property="og:description" content="Modelling pressure losses in GH2 pipelines CFD, Darcy-Weisbach vs AGA comparison, hydrogen embrittlement degradation." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E01B3D'/><text x='50' y='66' font-size='52' font-family='Arial' font-weight='700' fill='white' text-anchor='middle'>H2</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-/* ==========================================================================
-   TOKENS — instrument-black with a single hazard-red signal. Everything
-   lives on dark ground; red is reserved for pressure, alerts, and controls.
-   Display: Sora. Body: Inter. Data: IBM Plex Mono.
-   ========================================================================== */
 :root{
-  --bg:#0A0B0D;
-  --bg-2:#131519;
-  --bg-3:#1A1C21;
-  --line:rgba(255,255,255,.09);
-  --line-2:rgba(255,255,255,.18);
-  --ink:#F2F3F5;
-  --muted:#9BA0A8;
-  --dim:#63676F;
-  --red:#E01B3D;
-  --red-2:#FF4D6A;
-  --red-deep:#8E0F27;
-  --red-glow:rgba(224,27,61,.45);
-  --display:'Sora',sans-serif;
-  --body:'Inter',system-ui,sans-serif;
-  --mono:'IBM Plex Mono',ui-monospace,monospace;
-  --ease:cubic-bezier(.22,1,.36,1);
-  --rail:76px;
+  --bg:#0A0B0D; --bg-2:#131519; --bg-3:#1A1C21;
+  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.18);
+  --ink:#F2F3F5; --muted:#9BA0A8; --dim:#63676F;
+  --red:#E01B3D; --red-2:#FF4D6A; --red-deep:#8E0F27; --red-glow:rgba(224,27,61,.45);
+  --display:'Sora',sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.22,1,.36,1); --rail:76px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -44,11 +28,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 button{font:inherit}
-
-/* ============================================================ AMBIENT FLOAT LAYER */
 #floatLayer{position:fixed;inset:0;z-index:0;pointer-events:none}
-
-/* ============================================================ TOP NAV */
 .topnav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:.95rem clamp(1.2rem,4vw,2.6rem);background:rgba(10,11,13,.78);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .nav-progress{position:absolute;left:0;bottom:-1px;height:2px;width:0%;background:linear-gradient(90deg,var(--red-2),var(--red-deep));transition:width .12s linear}
 .nav-brand{display:flex;align-items:center;gap:.6rem}
@@ -67,7 +47,6 @@ button{font:inherit}
 .topnav-burger.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
 .topnav-burger.open span:nth-child(2){opacity:0}
 .topnav-burger.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
-
 @media (max-width:860px){
   .topnav-links{display:none;position:fixed;top:58px;left:0;right:0;flex-direction:column;align-items:flex-start;gap:.2rem;background:rgba(10,11,13,.98);backdrop-filter:blur(14px);padding:1rem 1.3rem 1.4rem;border-bottom:1px solid var(--line);z-index:299}
   .topnav-links.open{display:flex}
@@ -75,8 +54,6 @@ button{font:inherit}
   .topnav-links a.rail-cv{border:1px solid var(--red);margin-top:.4rem;text-align:center}
   .topnav-burger{display:flex}
 }
-
-/* ============================================================ LAYOUT */
 main{position:relative;z-index:1;padding-top:66px}
 .container{max-width:1120px;margin:0 auto;padding:0 clamp(1.3rem,4.5vw,3.2rem)}
 section{position:relative;padding:clamp(4.5rem,10vh,7rem) 0}
@@ -86,8 +63,6 @@ section{position:relative;padding:clamp(4.5rem,10vh,7rem) 0}
 h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6vw,2.5rem);line-height:1.1;letter-spacing:-.01em}
 .h-sub{color:var(--muted);max-width:62ch;margin-top:.85rem;font-size:1.02rem;text-align:justify}
 .divider{height:1px;background:linear-gradient(90deg,transparent,var(--line-2),transparent)}
-
-/* ============================================================ HERO */
 #hero{min-height:100svh;display:flex;align-items:center;padding-top:clamp(5rem,10vh,7rem)}
 #hero .container{display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center;width:100%}
 .hero-eyebrow{font-family:var(--mono);font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-2);margin-bottom:1.1rem;display:flex;align-items:center;gap:.7rem}
@@ -102,7 +77,6 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
 .btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(224,27,61,.28)}
 .btn-outline{border-color:var(--line-2);color:var(--ink)}
 .btn-outline:hover{border-color:var(--red);color:var(--red-2);transform:translateY(-3px)}
-
 .hero-visual{position:relative;height:min(58vh,480px);display:flex;align-items:center;justify-content:center}
 .hero-visual canvas{position:absolute;inset:0;width:100%;height:100%}
 .gauge-float{position:absolute;background:rgba(19,21,25,.82);border:1px solid var(--line-2);border-radius:10px;padding:.9rem 1.1rem;backdrop-filter:blur(6px);font-family:var(--mono);animation:bob 6s ease-in-out infinite}
@@ -120,13 +94,9 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
   .hero-visual{height:280px;margin-top:1rem}
   .hero-ghost{display:none}
 }
-
-/* ============================================================ SPEC STRIP (floating pills, no marquee) */
 .spec-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.3rem clamp(1.3rem,4.5vw,3.2rem);display:flex;flex-wrap:wrap;gap:.6rem .7rem;justify-content:center;background:var(--bg-2)}
 .spec-pill{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);padding:.42rem .95rem;border-radius:20px;animation:pillfloat 5.5s ease-in-out infinite}
 @keyframes pillfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-
-/* ============================================================ ABOUT */
 .about-wrap{display:grid;grid-template-columns:300px 1fr;gap:clamp(2rem,5vw,4rem);align-items:start}
 .portrait-stack{position:relative}
 .portrait-stack .frame{position:absolute;inset:0;border:1px solid var(--red);border-radius:12px;transform:translate(14px,14px);z-index:0}
@@ -138,7 +108,6 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
 .chip{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line-2);padding:.4rem .9rem;transition:color .2s,border-color .2s,transform .25s var(--ease);display:inline-flex;align-items:center;gap:.4rem;border-radius:20px}
 .chip:hover{color:var(--red-2);border-color:var(--red);transform:translateY(-2px)}
 .chip::before{content:'↗';color:var(--red);font-size:.64rem}
-
 .skill-groups{margin-top:2.6rem;display:flex;flex-direction:column;gap:1.1rem}
 .skill-group{display:flex;gap:1.2rem;padding:1rem 0;border-top:1px solid var(--line)}
 .skill-group:last-child{padding-bottom:0}
@@ -146,8 +115,6 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
 .skill-tags{display:flex;flex-wrap:wrap;gap:.5rem}
 .skill-tag{font-family:var(--mono);font-size:.78rem;color:var(--muted);border:1px solid var(--line);background:var(--bg-2);padding:.32rem .75rem;border-radius:5px}
 @media (max-width:860px){.about-wrap{grid-template-columns:1fr}.portrait-stack{max-width:260px}.skill-group{flex-direction:column;gap:.5rem}.skill-group .g-label{flex:none}}
-
-/* ============================================================ EXPERIENCE */
 .exp-list{display:flex;flex-direction:column;gap:1rem}
 .exp-card{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:1.6rem 1.8rem;overflow:hidden;transition:border-color .3s,transform .3s var(--ease)}
 .exp-card:hover{border-color:var(--red);transform:translateX(6px)}
@@ -158,8 +125,6 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
 .exp-card ul{color:var(--muted);font-size:.95rem;max-width:70ch;padding-left:1.1rem;position:relative;z-index:1}
 .exp-card ul li{margin-bottom:.35rem}
 .exp-fund{margin-top:.7rem;font-family:var(--mono);font-size:.78rem;color:var(--dim);position:relative;z-index:1}
-
-/* ============================================================ EDUCATION (horizontal snap) */
 .edu-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:.5rem;scroll-snap-type:x mandatory}
 .edu-scroll::-webkit-scrollbar{height:6px}
 .edu-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
@@ -170,8 +135,6 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
 .edu-card h3{font-family:var(--display);font-size:1.05rem;font-weight:700;margin-bottom:.25rem;position:relative;z-index:1}
 .edu-card .inst{color:var(--muted);font-size:.82rem;font-family:var(--mono);margin-bottom:.55rem;position:relative;z-index:1}
 .edu-card p{color:var(--muted);font-size:.9rem;position:relative;z-index:1}
-
-/* ============================================================ SIMULATOR */
 #simulator{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .sim-panel{display:grid;grid-template-columns:280px 1fr;gap:1.2rem;margin-top:2rem;background:var(--bg-3);border:1px solid var(--line-2);border-radius:14px;overflow:hidden}
 .sim-controls{padding:1.4rem;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:1.1rem}
@@ -183,6 +146,25 @@ h2.h-title{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6
 .ctrl input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer;border:2px solid #0A0B0D}
 .reset-btn{margin-top:.4rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);background:transparent;padding:.6rem;cursor:pointer;transition:border-color .2s,color .2s;border-radius:4px}
 .reset-btn:hover{border-color:var(--red);color:var(--red-2)}
+.sel{background:var(--bg-2);border:1px solid var(--line-2);color:var(--ink);padding:.5rem .6rem;border-radius:5px;font-family:var(--mono);font-size:.78rem;width:100%}
+.sel:focus{outline:none;border-color:var(--red)}
+.anim-btns{display:flex;gap:.5rem}
+.anim-btn{flex:1;font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:.65rem .4rem;border-radius:5px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s,background .2s,color .2s}
+.anim-btn.play{border-color:#1565C0;color:#8ab8ff}
+.anim-btn.play:hover:not(:disabled){background:#1565C0;color:#fff}
+.anim-btn.pause{border-color:#E65100;color:#ffb066}
+.anim-btn.pause:hover:not(:disabled){background:#E65100;color:#fff}
+.anim-btn.stop{border-color:var(--line-2);color:var(--muted)}
+.anim-btn.stop:hover:not(:disabled){border-color:var(--red);color:var(--red-2)}
+.anim-btn:disabled{opacity:.35;cursor:not-allowed}
+.anim-status{position:absolute;left:10px;bottom:10px;font-family:var(--mono);font-size:.68rem;color:var(--muted);background:rgba(19,21,25,.85);border:1px solid var(--line-2);padding:.3rem .6rem;border-radius:20px;pointer-events:none}
+.live-box{margin-top:1.1rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.9rem 1.1rem}
+.live-title{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--red-2);margin-bottom:.7rem}
+.live-title span{color:var(--dim);text-transform:none;letter-spacing:0}
+.live-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.4rem .8rem;font-family:var(--mono);font-size:.82rem;color:var(--ink);font-weight:600}
+.live-grid div.warn{color:#FFA726}
+.live-grid div.danger{color:#FF5252}
+.live-grid div.ok{color:#66BB6A}
 .sim-main{padding:1.4rem;min-width:0}
 .sim-tabs{position:relative;display:flex;gap:.25rem;flex-wrap:wrap;margin-bottom:1rem;border-bottom:1px solid var(--line);padding-bottom:.8rem}
 .sim-tab{font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:transparent;border:1px solid var(--line-2);padding:.5rem .85rem;cursor:pointer;transition:border-color .2s,color .2s,background .2s;border-radius:20px}
@@ -207,9 +189,13 @@ canvas.chart{display:block;width:100%;height:320px}
 .gate-text{color:var(--muted);font-size:1rem;max-width:56ch;text-align:justify;text-align-last:center}
 .gate-link{color:var(--red-2);font-weight:600;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
 .gate-link:hover{color:var(--red)}
+.gate-form{display:flex;flex-direction:column;gap:.7rem;width:100%;max-width:360px;margin-top:.4rem}
+.gate-form input{background:var(--bg-2);border:1px solid var(--line-2);color:var(--ink);padding:.7rem .9rem;border-radius:6px;font-family:var(--body);font-size:.9rem;width:100%}
+.gate-form input:focus{outline:none;border-color:var(--red)}
+.gate-form .btn{width:100%;text-align:center;border:none}
+.gate-err{color:var(--red-2);font-family:var(--mono);font-size:.72rem;display:none}
+.gate-priv{color:var(--dim);font-family:var(--mono);font-size:.64rem;line-height:1.5}
 @media (max-width:860px){.sim-panel{grid-template-columns:1fr}.sim-controls{border-right:0;border-bottom:1px solid var(--line)}}
-
-/* ============================================================ PUBLICATIONS */
 .pub-stack{display:flex;flex-direction:column;gap:.9rem}
 .pub-card{display:grid;grid-template-columns:88px 1fr auto;gap:1.4rem;align-items:center;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.4rem;transition:border-color .25s,transform .25s var(--ease)}
 .pub-card:hover{border-color:var(--red);transform:translateX(5px)}
@@ -219,8 +205,6 @@ canvas.chart{display:block;width:100%;height:320px}
 .pub-link{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red-2);border:1px solid var(--line-2);padding:.32rem .8rem;white-space:nowrap;border-radius:20px;transition:background .2s,color .2s,border-color .2s}
 .pub-link:hover{background:var(--red);color:#fff;border-color:var(--red)}
 @media (max-width:640px){.pub-card{grid-template-columns:1fr;gap:.5rem}.pub-yr{border-right:0;padding-right:0}.pub-link{justify-self:start}}
-
-/* ============================================================ PRESENTATIONS + TIMELINE */
 .pres-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
 .pres-col h4{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red-2);margin-bottom:.9rem}
 .pres-col ul{list-style:none}
@@ -228,15 +212,12 @@ canvas.chart{display:block;width:100%;height:320px}
 .pres-col li:last-child{border-bottom:0}
 .pres-col li strong{color:var(--ink);font-weight:600;display:block;margin-bottom:.1rem}
 @media (max-width:700px){.pres-grid{grid-template-columns:1fr;gap:1.6rem}}
-
 .tl-scroll{display:flex;gap:0;overflow-x:auto;margin-top:2.6rem;padding:1.6rem 0 1rem;position:relative}
 .tl-scroll::before{content:'';position:absolute;left:0;right:0;top:calc(1.6rem + 5px);height:1px;background:var(--line-2)}
 .tl-item{flex:0 0 190px;position:relative;padding:0 1rem}
 .tl-dot{width:10px;height:10px;border-radius:50%;background:var(--red);margin-bottom:.9rem;box-shadow:0 0 10px var(--red-glow);animation:pillfloat 5s ease-in-out infinite}
 .tl-item .date{font-family:var(--mono);font-size:.72rem;color:var(--red-2);margin-bottom:.3rem}
 .tl-item .what{color:var(--muted);font-size:.86rem;line-height:1.5}
-
-/* ============================================================ CERTIFICATES — ticket stubs */
 .cert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
 .cert-stub{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:1.3rem 1.4rem;display:flex;flex-direction:column;gap:.6rem;transition:transform .3s var(--ease),border-color .3s}
 .cert-stub:hover{transform:translateY(-4px);border-color:var(--red)}
@@ -248,23 +229,17 @@ canvas.chart{display:block;width:100%;height:320px}
 .cert-stub .meta{font-family:var(--mono);font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
 .cert-stub a{margin-top:auto;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red-2);display:inline-flex;align-items:center;gap:.35rem}
 .cert-stub a:hover{color:var(--red)}
-
-/* ============================================================ CONTACT */
 #contact .contact-wrap{text-align:left;max-width:760px}
 .contact-big{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,5vw,3.2rem);line-height:1.1;letter-spacing:-.015em;margin-bottom:1.2rem}
 .contact-big .accent{color:var(--red-2)}
 #contact p.lede{color:var(--muted);max-width:52ch;margin-bottom:2rem;text-align:justify}
 .contact-links{display:flex;flex-wrap:wrap;gap:.7rem}
 .contact-links .btn-primary{animation:bob 6s ease-in-out infinite}
-
-/* ============================================================ FOOTER */
 footer{border-top:1px solid var(--line);padding:1.8rem clamp(1.3rem,4.5vw,3.2rem);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
 footer a{color:var(--muted);transition:color .2s}
 footer a:hover{color:var(--red-2)}
-
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s var(--ease)}
 .reveal.in{opacity:1;transform:none}
-
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -276,7 +251,6 @@ footer a:hover{color:var(--red-2)}
 
 <div id="floatLayer"><canvas id="ambientCanvas"></canvas></div>
 
-<!-- ═══ TOP NAV ═══ -->
 <nav class="topnav" id="topnav">
   <div class="nav-brand">
     <a class="rail-mark" href="#hero">H₂</a>
@@ -300,7 +274,6 @@ footer a:hover{color:var(--red-2)}
 
 <main>
 
-<!-- ═══ HERO ═══ -->
 <section id="hero">
   <div class="container">
     <div>
@@ -328,7 +301,6 @@ footer a:hover{color:var(--red-2)}
   </div>
 </section>
 
-<!-- ═══ SPEC STRIP ═══ -->
 <div class="spec-strip" aria-hidden="true">
   <span class="spec-pill" style="animation-delay:0s">GH₂ Pipelines</span>
   <span class="spec-pill" style="animation-delay:-.4s">Darcy-Weisbach</span>
@@ -341,7 +313,6 @@ footer a:hover{color:var(--red-2)}
   <span class="spec-pill" style="animation-delay:-3.2s">Interactive Simulator</span>
 </div>
 
-<!-- ═══ ABOUT ═══ -->
 <section id="about">
   <div class="container">
     <div class="reveal">
@@ -356,7 +327,7 @@ footer a:hover{color:var(--red-2)}
       </div>
       <div class="about-text reveal">
         <p>I'm a PhD researcher in the <strong>Department of Aero-Thermo-Mechanics</strong> at the <strong>Université libre de Bruxelles (ULB)</strong>, working on pressure-loss modelling for gaseous hydrogen (GH₂) pipelines. My work covers 2D and 3D pipe-flow CFD, development of a wall erosion model, and how a pipeline's internal surface condition degrades over years or decades of operation under hydrogen embrittlement and pressure cycling.</p>
-        <p>Alongside the modelling, I built the browser-based pressure-loss simulator below — a working comparison of the Darcy-Weisbach and AGA models, recomputed live as you change the pipeline parameters. A dedicated GH₂ pipe pressure-loss test bench to validate these models against physical measurements is currently at the planning stage, not yet built.</p>
+        <p>Alongside the modelling, I built the browser-based pressure-loss simulator below a working comparison of the Darcy-Weisbach and AGA models, recomputed live as you change the pipeline parameters. A dedicated GH₂ pipe pressure-loss test bench to validate these models against physical measurements is currently at the planning stage, not yet built.</p>
         <p>Before the PhD, I completed a Master's in Aerospace Engineering at <strong>Sapienza University of Rome</strong> and a Bachelor's in Mechanical Engineering at <strong>VTU, Belgaum</strong>, then spent three years at <strong>Tata Consultancy Services</strong> as a manual software tester, working on validation rules, workflow automation, and defect tracking for enterprise Salesforce deployments.</p>
         <div class="about-links">
           <a class="chip" href="mailto:akshay.bambore@ulb.be">Email</a>
@@ -365,7 +336,6 @@ footer a:hover{color:var(--red-2)}
         </div>
       </div>
     </div>
-
     <div class="skill-groups reveal">
       <div class="skill-group">
         <div class="g-label">Pipeline Engineering</div>
@@ -401,7 +371,6 @@ footer a:hover{color:var(--red-2)}
   </div>
 </section>
 
-<!-- ═══ EXPERIENCE ═══ -->
 <section id="experience">
   <div class="container">
     <div class="sec-head reveal">
@@ -448,7 +417,6 @@ footer a:hover{color:var(--red-2)}
   </div>
 </section>
 
-<!-- ═══ EDUCATION ═══ -->
 <section id="education">
   <div class="container">
     <div class="sec-head reveal">
@@ -458,37 +426,29 @@ footer a:hover{color:var(--red-2)}
     </div>
     <div class="edu-scroll reveal" style="margin-top:2rem">
       <div class="edu-card">
-        <div class="edu-ghost">12</div>
-        <div class="yr">2012 — 2016</div>
-        <h3>GM Institute of Technology, Davangere</h3>
-        <div class="inst">Karnataka · India</div>
-        <p>Bachelor of Mechanical Engineering coursework — core thermodynamics, fluid mechanics, and machine design.</p>
-      </div>
-      <div class="edu-card">
-        <div class="edu-ghost">12</div>
-        <div class="yr">2012 — 2016</div>
-        <h3>Visvesvaraya Technological University (VTU)</h3>
-        <div class="inst">Belgaum · India</div>
-        <p>Affiliating university — Bachelor of Mechanical Engineering degree awarded.</p>
-      </div>
-      <div class="edu-card">
         <div class="edu-ghost">17</div>
         <div class="yr">2017 — 2020</div>
         <h3>Masters in Aerospace Engineering</h3>
         <div class="inst">Sapienza University of Rome · Italy</div>
         <p>Aerospace engineering fundamentals with a focus on fluid dynamics and propulsion.</p>
       </div>
+      <div class="edu-card">
+        <div class="edu-ghost">12</div>
+        <div class="yr">2012 — 2016</div>
+        <h3>GM Institute of Technology, Davangere</h3>
+        <div class="inst">Karnataka · India</div>
+        <p>Bachelor of Mechanical Engineering coursework — core thermodynamics, fluid mechanics, and machine design.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ SIMULATOR ═══ -->
 <section id="simulator">
   <div class="container">
     <div class="sec-head reveal">
       <div class="station">Checkpoint 04 · Live Tool</div>
       <h2 class="h-title">GH₂ pipeline pressure-loss simulator.</h2>
-      <p class="h-sub">A browser port of my PyQt5 research tool. It integrates pressure loss along a pipeline two ways — Darcy-Weisbach with a Colebrook-White friction factor (Re-dependent), and the AGA fully-turbulent equation — using the same tabulated compressibility factor Z(P) and equation of state in both. Drag the sliders; everything recomputes instantly, entirely in your browser.</p>
+      <p class="h-sub">A browser port of my PyQt5 research tool — DW · AGA · Weymouth · Panhandle B · General Flow. Pick any two models to compare, hit Play, and watch the pressure front travel down the pipe in real time, exactly like the desktop app. Enter your details below to unlock it.</p>
     </div>
 
     <div class="sim-panel reveal">
@@ -517,16 +477,59 @@ footer a:hover{color:var(--red-2)}
           <label>Compression trigger <b id="lbl_compress">30 bar</b></label>
           <input type="range" id="s_compress" min="10" max="100" step="1" value="30" />
         </div>
+        <div class="ctrl">
+          <label>Z(P) model</label>
+          <select id="s_zmodel" class="sel">
+            <option value="table" selected>Tabulated Z</option>
+            <option value="gerg">GERG-2004-style</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <label>Model A</label>
+          <select id="s_modelA" class="sel">
+            <option value="dw" selected>DW (Colebrook-White)</option>
+            <option value="aga">AGA (Fully Turbulent)</option>
+            <option value="weymouth">Weymouth</option>
+            <option value="panhandleB">Panhandle B</option>
+            <option value="general">General Flow Eq.</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <label>Model B</label>
+          <select id="s_modelB" class="sel">
+            <option value="dw">DW (Colebrook-White)</option>
+            <option value="aga" selected>AGA (Fully Turbulent)</option>
+            <option value="weymouth">Weymouth</option>
+            <option value="panhandleB">Panhandle B</option>
+            <option value="general">General Flow Eq.</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <label>Animation speed <b id="lbl_speed">Slow (4)</b></label>
+          <input type="range" id="s_speed" min="1" max="20" step="1" value="4" />
+        </div>
+        <div class="anim-btns">
+          <button class="anim-btn play" id="btnPlay">▶ Play</button>
+          <button class="anim-btn pause" id="btnPause" disabled>⏸ Pause</button>
+          <button class="anim-btn stop" id="btnStop" disabled>■ Stop</button>
+        </div>
         <button class="reset-btn" id="resetBtn">Reset to defaults</button>
       </div>
 
       <div class="sim-main">
-        <div class="sim-gate">
+        <div class="sim-gate" id="simGate">
           <div class="gate-icon">⛯</div>
-          <p class="gate-text">This panel is wired to a working Darcy-Weisbach vs AGA pressure-loss engine — live pressure, velocity, density and friction-factor profiles across the pipeline, recomputed as you move the sliders. Output is currently reserved for direct discussion rather than open publication. To run the full simulation, kindly <a href="#contact" class="gate-link">get in touch</a> and I'll walk you through it.</p>
+          <p class="gate-text">This panel is wired to a working Darcy-Weisbach · AGA · Weymouth · Panhandle B · General Flow pressure-loss engine live pressure, velocity, density, shear-stress and friction-factor profiles across the pipeline, with a real Play/Pause/Stop propagation animation. Please share a few details to unlock it.</p>
+          <form class="gate-form" id="gateForm" autocomplete="on">
+            <input type="text" id="g_name" placeholder="Full name" required />
+            <input type="email" id="g_email" placeholder="Email address" required />
+            <input type="text" id="g_org" placeholder="Organization / Institution" required />
+            <button type="submit" class="btn btn-primary">Unlock simulator</button>
+            <div class="gate-err" id="gateErr">Please fill in all three fields with a valid email.</div>
+          </form>
+          <p class="gate-priv">Your details are used only to grant access to this tool and are not shared with third parties.</p>
         </div>
 
-        <!-- Full output — computed live in the background, kept out of view per current settings -->
         <div class="sim-output" id="simOutput" aria-hidden="true">
           <div class="sim-tabs" id="simTabs">
             <button class="sim-tab active" data-tab="pressure">Pressure profile</button>
@@ -534,10 +537,12 @@ footer a:hover{color:var(--red-2)}
             <button class="sim-tab" data-tab="ztable">Compressibility Z(P)</button>
             <button class="sim-tab" data-tab="velocity">Local velocity</button>
             <button class="sim-tab" data-tab="density">Local density</button>
+            <button class="sim-tab" data-tab="shear">Wall shear stress</button>
           </div>
           <div class="chart-wrap">
             <canvas class="chart" id="simCanvas"></canvas>
             <div class="chart-tip" id="chartTip"></div>
+            <div class="anim-status" id="animStatus"></div>
           </div>
 
           <div class="sim-stats">
@@ -549,26 +554,33 @@ footer a:hover{color:var(--red-2)}
             <div class="stat"><div class="k">Model agreement</div><div class="v red" id="st_verdict">—</div></div>
           </div>
 
-          <table class="sim-table">
+          <div class="live-box">
+            <div class="live-title">Live Pressure Loss <span>(front during animation, full pipeline otherwise)</span></div>
+            <div class="live-grid">
+              <div id="lv_dist">Distance&nbsp;&nbsp;&nbsp;: —</div>
+              <div id="lv_pa">Model A pres&nbsp;: —</div>
+              <div id="lv_pb">Model B pres&nbsp;: —</div>
+              <div id="lv_va">Model A veloc: —</div>
+              <div id="lv_vb">Model B veloc: —</div>
+              <div id="lv_la">Model A loss&nbsp;: —</div>
+              <div id="lv_lb">Model B loss&nbsp;: —</div>
+              <div id="lv_diff">Diff A - B&nbsp;&nbsp;: —</div>
+            </div>
+          </div>
+
+          <table class="sim-table" id="simTable">
             <thead>
-              <tr><th>Parameter (full pipeline, at outlet)</th><th>DW (Colebrook-White)</th><th>AGA (fully-turbulent)</th></tr>
+              <tr><th>Pressure Loss Model</th><th>Pipeline Distance (km)</th><th>Initial P (bar)</th><th>Outlet P (bar)</th><th>Pressure loss (bar)</th><th>Velocity (m/s)</th><th>Friction factor</th><th>Shear stress (Pa)</th></tr>
             </thead>
-            <tbody>
-              <tr><td>Outlet pressure (bar)</td><td id="t_pout_dw">—</td><td id="t_pout_aga">—</td></tr>
-              <tr><td>Pressure loss (bar)</td><td id="t_loss_dw">—</td><td id="t_loss_aga">—</td></tr>
-              <tr><td>Friction factor</td><td id="t_f_dw">—</td><td id="t_f_aga">—</td></tr>
-              <tr><td>Compression stations</td><td id="t_sta_dw">—</td><td id="t_sta_aga">—</td></tr>
-              <tr><td>Model deviation</td><td></td><td id="t_dev">—</td></tr>
-            </tbody>
+            <tbody id="simTableBody"></tbody>
           </table>
-          <p class="sim-note">DW integrates Darcy-Weisbach friction loss segment-by-segment with a Reynolds-dependent Colebrook-White factor; a compression station resets the pressure to inlet whenever it drops below the trigger. AGA uses a fixed fully-turbulent friction factor baked into its transmission constant K. Both share the same tabulated Z(P) compressibility factor (50–120 bar, linearly interpolated; clamped outside that range) and equation of state, so the comparison isolates the effect of the friction model. Compressibility table sourced from external reference data — a known non-physical dip appears between 80–90 bar (Z falls before rising again), a quirk of the source table rather than my model, kept as-supplied for transparency.</p>
+          <p class="sim-note">DW integrates Darcy-Weisbach friction loss segment-by-segment with a Reynolds-dependent Colebrook-White factor. AGA, Weymouth, Panhandle B and General Flow are SI-unit gas transmission equations (Menon, "Gas Pipeline Hydraulics"), each with its own friction/transmission-factor assumption; a compression station resets the pressure to inlet whenever it drops below the trigger. All models share the same Z(P) compressibility model selected above (tabulated, linearly interpolated 50–120 bar, or a smooth GERG-2004-style quadratic fit to the same reference points) and equation of state, so the comparison isolates the effect of the friction/transmission model alone.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ PUBLICATIONS ═══ -->
 <section id="publications">
   <div class="container">
     <div class="sec-head reveal">
@@ -596,7 +608,6 @@ footer a:hover{color:var(--red-2)}
   </div>
 </section>
 
-<!-- ═══ PRESENTATIONS & ACTIVITIES ═══ -->
 <section id="presentations">
   <div class="container">
     <div class="sec-head reveal">
@@ -635,7 +646,6 @@ footer a:hover{color:var(--red-2)}
   </div>
 </section>
 
-<!-- ═══ CERTIFICATES ═══ -->
 <section id="certificates">
   <div class="container">
     <div class="sec-head reveal">
@@ -708,7 +718,6 @@ footer a:hover{color:var(--red-2)}
   </div>
 </section>
 
-<!-- ═══ CONTACT ═══ -->
 <section id="contact">
   <div class="container contact-wrap">
     <div class="station reveal">Checkpoint 08 · Contact</div>
@@ -723,7 +732,6 @@ footer a:hover{color:var(--red-2)}
 
 </main>
 
-<!-- ═══ FOOTER ═══ -->
 <footer>
   <div>© 2026 Akshay Bambore · Dept. of Aero-Thermo-Mechanics, ULB</div>
   <div>Hosted on <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a></div>
@@ -734,13 +742,11 @@ footer a:hover{color:var(--red-2)}
 'use strict';
 const motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── Top nav: mobile toggle ──────────────────────────────── */
 const burger = document.getElementById('topnavBurger');
 const topnavLinks = document.getElementById('topnavLinks');
 burger.addEventListener('click', ()=>{ burger.classList.toggle('open'); topnavLinks.classList.toggle('open'); });
 topnavLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=>{ burger.classList.remove('open'); topnavLinks.classList.remove('open'); }));
 
-/* ── Scroll reveal ────────────────────────────────────────── */
 document.querySelectorAll('.exp-list,.edu-scroll,.pub-stack,.pres-grid,.cert-grid,.about-wrap,.skill-groups').forEach(parent=>{
   [...parent.children].forEach((child,i)=>{ child.style.transitionDelay = Math.min(i*70,380)+'ms'; child.classList.add('reveal'); });
 });
@@ -749,12 +755,10 @@ const revealObs = new IntersectionObserver(entries=>{
 },{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
 
-/* ── Top nav: scroll progress + active-section highlight ─── */
 const navProgress = document.getElementById('navProgress');
 const navLinks = document.querySelectorAll('.topnav-links a[data-sec]');
 const linkFor = {};
 navLinks.forEach(a=> linkFor[a.dataset.sec] = a);
-
 function onScroll(){
   const y = window.scrollY;
   const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -763,7 +767,6 @@ function onScroll(){
 }
 window.addEventListener('scroll', onScroll, {passive:true});
 onScroll();
-
 const spy = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(!e.isIntersecting) return;
@@ -774,34 +777,20 @@ const spy = new IntersectionObserver(entries=>{
 },{rootMargin:'-42% 0px -50% 0px'});
 document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
 
-/* ═══════════════════════════════════════════════════════════
-   AMBIENT FLOAT LAYER — a handful of slow hydrogen-bubble
-   particles drifting upward across the whole page. Cheap: fixed
-   particle count, circle fills only, no per-pixel work — keeps
-   this comfortably smooth at high refresh rates.
-   ═══════════════════════════════════════════════════════════ */
 const ambCanvas = document.getElementById('ambientCanvas');
 const actx = ambCanvas.getContext('2d');
 let AW=0, AH=0, ambParticles=[];
-function ambResize(){
-  AW = window.innerWidth; AH = window.innerHeight;
-  ambCanvas.width = AW; ambCanvas.height = AH;
-}
+function ambResize(){ AW = window.innerWidth; AH = window.innerHeight; ambCanvas.width = AW; ambCanvas.height = AH; }
 function makeParticles(){
   const n = Math.min(46, Math.round((AW*AH)/42000));
   ambParticles = Array.from({length:n}, ()=>({
-    x: Math.random()*AW,
-    y: Math.random()*AH,
-    r: 1.1 + Math.random()*2.6,
-    speed: 6 + Math.random()*14,
-    drift: (Math.random()-0.5)*10,
-    phase: Math.random()*Math.PI*2,
-    alpha: 0.06 + Math.random()*0.12
+    x: Math.random()*AW, y: Math.random()*AH, r: 1.1 + Math.random()*2.6,
+    speed: 6 + Math.random()*14, drift: (Math.random()-0.5)*10,
+    phase: Math.random()*Math.PI*2, alpha: 0.06 + Math.random()*0.12
   }));
 }
 ambResize(); makeParticles();
 window.addEventListener('resize', ()=>{ ambResize(); makeParticles(); });
-
 let ambRunning = motionOK;
 let ambLast = performance.now();
 function ambLoop(now){
@@ -814,8 +803,7 @@ function ambLoop(now){
     if(p.y < -10){ p.y = AH+10; p.x = Math.random()*AW; }
     if(p.x < -10) p.x = AW+10; if(p.x > AW+10) p.x = -10;
     const g = actx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);
-    g.addColorStop(0, `rgba(224,27,61,${p.alpha})`);
-    g.addColorStop(1, 'rgba(224,27,61,0)');
+    g.addColorStop(0, `rgba(224,27,61,${p.alpha})`); g.addColorStop(1, 'rgba(224,27,61,0)');
     actx.fillStyle = g;
     actx.beginPath(); actx.arc(p.x,p.y,p.r*4,0,Math.PI*2); actx.fill();
   });
@@ -828,24 +816,17 @@ document.addEventListener('visibilitychange', ()=>{
   if(ambRunning && !wasRunning){ ambLast = performance.now(); requestAnimationFrame(ambLoop); }
 });
 
-/* ═══════════════════════════════════════════════════════════
-   HERO CANVAS — a tighter, denser version of the same particle
-   system confined to the hero visual, plus a slow rotating ring
-   evoking a pressure gauge. Lightweight: circles + one arc path.
-   ═══════════════════════════════════════════════════════════ */
 const heroCanvas = document.getElementById('heroCanvas');
 const hctx = heroCanvas.getContext('2d');
 const heroVisual = document.querySelector('.hero-visual');
-let HW=0, HH=0, heroParticles=[], heroRunning=false, heroRaf=null, heroT=0;
+let HW=0, HH=0, heroParticles=[], heroRunning=false, heroRaf=null;
 function heroResize(){
   const r = heroVisual.getBoundingClientRect();
-  HW = r.width; HH = r.height;
-  heroCanvas.width = HW; heroCanvas.height = HH;
+  HW = r.width; HH = r.height; heroCanvas.width = HW; heroCanvas.height = HH;
   const n = Math.min(28, Math.round((HW*HH)/9000));
   heroParticles = Array.from({length:n}, ()=>({
-    x: Math.random()*HW, y: Math.random()*HH,
-    r: 1.2+Math.random()*2.2, speed: 8+Math.random()*16,
-    phase: Math.random()*Math.PI*2, alpha: 0.14+Math.random()*0.22
+    x: Math.random()*HW, y: Math.random()*HH, r: 1.2+Math.random()*2.2,
+    speed: 8+Math.random()*16, phase: Math.random()*Math.PI*2, alpha: 0.14+Math.random()*0.22
   }));
 }
 function heroDraw(now){
@@ -860,14 +841,12 @@ function heroDraw(now){
   hctx.strokeStyle='rgba(255,77,106,0.85)'; hctx.lineWidth=2;
   hctx.beginPath(); hctx.arc(cx,cy,R,sweep,sweep+0.9); hctx.stroke();
   hctx.restore();
-
   heroParticles.forEach(p=>{
     p.y -= p.speed*0.016;
     p.x += Math.sin(now/900+p.phase)*6*0.016;
     if(p.y<-10){ p.y=HH+10; p.x=Math.random()*HW; }
     const g = hctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);
-    g.addColorStop(0, `rgba(255,77,106,${p.alpha})`);
-    g.addColorStop(1, 'rgba(255,77,106,0)');
+    g.addColorStop(0, `rgba(255,77,106,${p.alpha})`); g.addColorStop(1, 'rgba(255,77,106,0)');
     hctx.fillStyle=g;
     hctx.beginPath(); hctx.arc(p.x,p.y,p.r*4,0,Math.PI*2); hctx.fill();
   });
@@ -884,19 +863,15 @@ new IntersectionObserver(([e])=>setHeroRunning(e.isIntersecting)).observe(docume
 document.addEventListener('visibilitychange', ()=> setHeroRunning(!document.hidden && document.getElementById('hero').getBoundingClientRect().top < window.innerHeight));
 let hrt; window.addEventListener('resize', ()=>{ clearTimeout(hrt); hrt=setTimeout(heroResize,150); });
 
-/* ═══════════════════════════════════════════════════════════
-   PIPELINE PRESSURE-LOSS PHYSICS
-   Direct port of Animation_updated.py — Darcy-Weisbach (DW) vs
-   AGA fully-turbulent comparison, shared tabulated Z(P).
-   Verified against the Python source for default parameters.
-   ═══════════════════════════════════════════════════════════ */
+/* PIPELINE PRESSURE-LOSS PHYSICS — direct port of PressureLoss_MultipleModel.py
+   Models: dw, aga, weymouth, panhandleB, general — all 5 registered and integrated. */
 const TEMPERATURE=303.15, TSTD=288.65, PSTD=101325.0, R_SPEC=4124.0;
-const GAMMA_SG=2.016/28.96, MU_H2=9.0e-6, NUM_SEG=500;
+const GAMMA_SG=2.016/28.96, MU_H2=9.0e-6, NUM_SEG=500, PIPE_EFFICIENCY=1.0;
 const Z_TABLE={50:1.0349,60:1.0423,70:1.0498,80:1.0574,90:1.0651,100:1.0729,110:1.0808,120:1.0889};
 const Z_KEYS=Object.keys(Z_TABLE).map(Number).sort((a,b)=>a-b);
-
-function Zfn(P_pa){
-  const p_bar=P_pa/1e5;
+const GERG_COEF=[5.416666666666179e-7,0.0006787500000000039,0.9996208333333331]; // np.polyfit(deg2) of Z_TABLE
+let CURRENT_Z_MODEL='table';
+function zTableLookup(p_bar){
   if(p_bar<=Z_KEYS[0]) return Z_TABLE[Z_KEYS[0]];
   if(p_bar>=Z_KEYS[Z_KEYS.length-1]) return Z_TABLE[Z_KEYS[Z_KEYS.length-1]];
   for(let i=0;i<Z_KEYS.length-1;i++){
@@ -904,6 +879,11 @@ function Zfn(P_pa){
     if(x0<=p_bar && p_bar<=x1){ const y0=Z_TABLE[x0], y1=Z_TABLE[x1]; return y0+(p_bar-x0)*(y1-y0)/(x1-x0); }
   }
   return Z_TABLE[Z_KEYS[Z_KEYS.length-1]];
+}
+function zGerg(p_bar){ return GERG_COEF[0]*p_bar*p_bar + GERG_COEF[1]*p_bar + GERG_COEF[2]; }
+function Zfn(P_pa){
+  const p_bar=P_pa/1e5;
+  return CURRENT_Z_MODEL==='gerg' ? zGerg(p_bar) : zTableLookup(p_bar);
 }
 function rhoFn(P_pa){ return P_pa/(Zfn(P_pa)*R_SPEC*TEMPERATURE); }
 function colebrook(Re,eps,D){
@@ -919,6 +899,82 @@ function colebrook(Re,eps,D){
 }
 function fFullyTurbulent(D,eps){ return 1.0/Math.pow(4.0*Math.log10(3.7*D/eps),2); }
 function agaK(D,eps){ return 0.018*(288.65/101.325)*4.0*Math.log10(3.7*D/eps)*Math.pow(D*1000,2.5); }
+function wallShearStress(f_darcy,rho_local,v_local){ return f_darcy*rho_local*v_local*v_local/8.0; }
+
+const MODEL_KEYS=['dw','aga','weymouth','panhandleB','general'];
+const MODEL_META={
+  dw:{label:'DW (Colebrook-White)'}, aga:{label:'AGA (Fully Turbulent)'},
+  weymouth:{label:'Weymouth'}, panhandleB:{label:'Panhandle B'}, general:{label:'General Flow Eq.'}
+};
+
+/* Weymouth / Panhandle B / General Flow — SI-unit transmission equations,
+   solved for outlet pressure over a segment dx given the fixed daily
+   standard flow Q_day. Menon "Gas Pipeline Hydraulics" SI conventions:
+   pressures kPa, diameter mm, length km. Returns Pa, or null if no
+   physical solution over this segment. */
+function flowEqStep(modelKey,Q_day,p1_pa,dx_m,D_m,epsilon_m,gamma,T_avg,z_val,mass_flow,area){
+  const P1_kPa=p1_pa/1000.0, L_km=dx_m/1000.0, D_mm=D_m*1000.0;
+  const Tb=TSTD, Pb=PSTD/1000.0, E=PIPE_EFFICIENCY;
+  let C,n,p,q,m,rhs;
+  if(modelKey==='weymouth'){
+    C=0.0037435; n=1.0; p=0.5; q=2.667; m=1.0;
+    const denom=C*Math.pow(Tb/Pb,n)*E*Math.pow(D_mm,q);
+    rhs=Math.pow(gamma,m)*L_km*T_avg*z_val*Math.pow(Q_day/denom,1.0/p);
+  } else if(modelKey==='panhandleB'){
+    C=0.01002; n=1.02; p=0.51; q=2.53; m=0.961;
+    const denom=C*Math.pow(Tb/Pb,n)*E*Math.pow(D_mm,q);
+    rhs=Math.pow(gamma,m)*L_km*T_avg*z_val*Math.pow(Q_day/denom,1.0/p);
+  } else if(modelKey==='general'){
+    C=1.1494e-3; n=1.0; p=0.5; q=2.5; m=1.0;
+    const r_loc=rhoFn(p1_pa), v_loc=mass_flow/(r_loc*area);
+    const Re_loc=r_loc*v_loc*D_m/MU_H2, f_loc=colebrook(Re_loc,epsilon_m,D_m);
+    const denom=C*Math.pow(Tb/Pb,n)*Math.pow(D_mm,q);
+    rhs=Math.pow(gamma,m)*L_km*T_avg*z_val*f_loc*Math.pow(Q_day/denom,1.0/p);
+  } else { throw new Error(modelKey); }
+  const p2sq=P1_kPa*P1_kPa-rhs;
+  if(p2sq<=0) return null;
+  return Math.sqrt(p2sq)*1000.0;
+}
+
+function integrateModel(modelKey,p_inlet_pa,mass_flow,Q_day,K_aga,diameter,epsilon_m,dx,p_comp_pa,area,x_km){
+  const n=NUM_SEG;
+  const P=new Array(n+1).fill(NaN), V=new Array(n+1).fill(NaN), Rho=new Array(n+1).fill(NaN), Tau=new Array(n+1).fill(NaN);
+  const rho_in=rhoFn(p_inlet_pa), v_in=mass_flow/(rho_in*area);
+  const Re_in=rho_in*v_in*diameter/MU_H2, f_in=colebrook(Re_in,epsilon_m,diameter);
+  P[0]=p_inlet_pa; V[0]=v_in; Rho[0]=rho_in; Tau[0]=wallShearStress(f_in,rho_in,v_in);
+  const stations=[]; let p_cur=p_inlet_pa, last=0;
+  for(let i=0;i<n;i++){
+    let Pn;
+    if(modelKey==='dw'){
+      const r=rhoFn(p_cur), v=mass_flow/(r*area);
+      const Re=r*v*diameter/MU_H2, f=colebrook(Re,epsilon_m,diameter);
+      const dP=f*(dx/diameter)*r*v*v/2.0;
+      Pn=p_cur-dP;
+      if(Pn<=1e5) break;
+    } else if(modelKey==='aga'){
+      const dpsq=Math.pow(Q_day/K_aga,2)*(GAMMA_SG*dx*TEMPERATURE*Zfn(p_cur));
+      const p2sq=Math.pow(p_cur/1000.0,2)-dpsq;
+      if(p2sq<=0) break;
+      Pn=Math.sqrt(p2sq)*1000.0;
+    } else {
+      Pn=flowEqStep(modelKey,Q_day,p_cur,dx,diameter,epsilon_m,GAMMA_SG,TEMPERATURE,Zfn(p_cur),mass_flow,area);
+      if(Pn===null || Pn<=1e5) break;
+    }
+    p_cur=Pn;
+    if(p_cur<p_comp_pa){ stations.push((i+1)*dx/1000.0); p_cur=p_inlet_pa; }
+    P[i+1]=p_cur;
+    const dens=rhoFn(p_cur), v_i=mass_flow/(dens*area);
+    const Re_i=dens*v_i*diameter/MU_H2, f_i=colebrook(Re_i,epsilon_m,diameter);
+    V[i+1]=v_i; Rho[i+1]=dens; Tau[i+1]=wallShearStress(f_i,dens,v_i);
+    last=i+1;
+  }
+  return {
+    P:P.map(v=>v/1e5), V, Rho, Tau, stations,
+    P_out:P[last]/1e5, loss:p_inlet_pa/1e5-P[last]/1e5, dist_reached:x_km[last],
+    V_out:V[last], Rho_out:Rho[last], Tau_out:Tau[last],
+    f_out:colebrook(Rho[last]*V[last]*diameter/MU_H2,epsilon_m,diameter)
+  };
+}
 
 function runModels(p_inlet_bar,v_inlet,diameter,length_km,epsilon_mm,p_compress_bar){
   const length_m=length_km*1000.0, epsilon_m=epsilon_mm/1000.0, dx=length_m/NUM_SEG;
@@ -926,82 +982,36 @@ function runModels(p_inlet_bar,v_inlet,diameter,length_km,epsilon_mm,p_compress_
   const p_inlet_pa=p_inlet_bar*1e5, p_comp_pa=p_compress_bar*1e5;
   const Z_in=Zfn(p_inlet_pa), rho_in=rhoFn(p_inlet_pa), mass_flow=rho_in*area*v_inlet;
   const rho_std=PSTD/(1.0*R_SPEC*TSTD), Q_day=mass_flow/rho_std*86400.0;
-  const K=agaK(diameter,epsilon_m);
+  const K_aga=agaK(diameter,epsilon_m);
   const x_km=Array.from({length:NUM_SEG+1},(_,i)=>i*length_km/NUM_SEG);
   const Re_in=rho_in*v_inlet*diameter/MU_H2;
   const f_cw=colebrook(Re_in,epsilon_m,diameter), f_ft=fFullyTurbulent(diameter,epsilon_m);
-
-  const P_dw=new Array(NUM_SEG+1).fill(NaN), V_dw=new Array(NUM_SEG+1).fill(NaN);
-  const Rho_dw=new Array(NUM_SEG+1).fill(NaN);
-  P_dw[0]=p_inlet_pa; V_dw[0]=v_inlet; Rho_dw[0]=rho_in;
-  const sta_dw=[]; let p_cur=p_inlet_pa, last_dw=0;
-  for(let i=0;i<NUM_SEG;i++){
-    const r=rhoFn(p_cur), v=mass_flow/(r*area);
-    const Re=r*v*diameter/MU_H2;
-    const f=colebrook(Re,epsilon_m,diameter);
-    const dP=f*(dx/diameter)*r*v*v/2.0;
-    const Pn=p_cur-dP;
-    if(Pn<=1e5) break;
-    p_cur=Pn;
-    if(p_cur<p_comp_pa){ sta_dw.push((i+1)*dx/1000.0); p_cur=p_inlet_pa; }
-    P_dw[i+1]=p_cur;
-    const dens=rhoFn(p_cur);
-    V_dw[i+1]=mass_flow/(dens*area); Rho_dw[i+1]=dens;
-    last_dw=i+1;
-  }
-
-  const P_aga=new Array(NUM_SEG+1).fill(NaN), V_aga=new Array(NUM_SEG+1).fill(NaN);
-  const Rho_aga=new Array(NUM_SEG+1).fill(NaN);
-  P_aga[0]=p_inlet_pa; V_aga[0]=v_inlet; Rho_aga[0]=rho_in;
-  const sta_aga=[]; p_cur=p_inlet_pa; let last_aga=0;
-  for(let i=0;i<NUM_SEG;i++){
-    const dpsq=Math.pow(Q_day/K,2)*(GAMMA_SG*dx*TEMPERATURE*Zfn(p_cur));
-    const p2sq=Math.pow(p_cur/1000.0,2)-dpsq;
-    if(p2sq<=0) break;
-    const Pn=Math.sqrt(p2sq)*1000.0;
-    p_cur=Pn;
-    if(p_cur<p_comp_pa){ sta_aga.push((i+1)*dx/1000.0); p_cur=p_inlet_pa; }
-    P_aga[i+1]=p_cur;
-    const dens=rhoFn(p_cur);
-    V_aga[i+1]=mass_flow/(dens*area); Rho_aga[i+1]=dens;
-    last_aga=i+1;
-  }
-
+  const models={};
+  MODEL_KEYS.forEach(key=>{ models[key]=integrateModel(key,p_inlet_pa,mass_flow,Q_day,K_aga,diameter,epsilon_m,dx,p_comp_pa,area,x_km); });
   return {
-    x_km,
-    P_dw:P_dw.map(v=>v/1e5), P_aga:P_aga.map(v=>v/1e5),
-    V_dw, V_aga, Rho_dw, Rho_aga,
-    P_out_dw:P_dw[last_dw]/1e5, P_out_aga:P_aga[last_aga]/1e5,
-    loss_dw:p_inlet_bar-P_dw[last_dw]/1e5, loss_aga:p_inlet_bar-P_aga[last_aga]/1e5,
-    sta_dw, sta_aga, Z_in, rho_in, Re_in, f_cw, f_ft, mass_flow,
+    x_km, models, v_inlet, Z_in, rho_in, Re_in, f_cw, f_ft, mass_flow,
     Q_MMSCFD: Q_day/(1e6*0.0283168), p_inlet_bar, p_compress_bar
   };
 }
 
-/* ── UI wiring ─────────────────────────────────────────────── */
-const S = {
-  pressure: document.getElementById('s_pressure'),
-  velocity: document.getElementById('s_velocity'),
-  diameter: document.getElementById('s_diameter'),
-  length: document.getElementById('s_length'),
-  roughness: document.getElementById('s_roughness'),
-  compress: document.getElementById('s_compress'),
-};
-const L = {
-  pressure: document.getElementById('lbl_pressure'),
-  velocity: document.getElementById('lbl_velocity'),
-  diameter: document.getElementById('lbl_diameter'),
-  length: document.getElementById('lbl_length'),
-  roughness: document.getElementById('lbl_roughness'),
-  compress: document.getElementById('lbl_compress'),
-};
+const S = { pressure:document.getElementById('s_pressure'), velocity:document.getElementById('s_velocity'),
+  diameter:document.getElementById('s_diameter'), length:document.getElementById('s_length'),
+  roughness:document.getElementById('s_roughness'), compress:document.getElementById('s_compress') };
+const L = { pressure:document.getElementById('lbl_pressure'), velocity:document.getElementById('lbl_velocity'),
+  diameter:document.getElementById('lbl_diameter'), length:document.getElementById('lbl_length'),
+  roughness:document.getElementById('lbl_roughness'), compress:document.getElementById('lbl_compress') };
+const s_zmodel=document.getElementById('s_zmodel'), s_modelA=document.getElementById('s_modelA'), s_modelB=document.getElementById('s_modelB');
+const s_speed=document.getElementById('s_speed'), lbl_speed=document.getElementById('lbl_speed');
+const btnPlay=document.getElementById('btnPlay'), btnPause=document.getElementById('btnPause'), btnStop=document.getElementById('btnStop');
+const animStatusEl=document.getElementById('animStatus');
 const DEFAULTS = {pressure:90, velocity:10, diameter:0.9, length:500, roughness:0.0462, compress:30};
-
+function keyA(){ return s_modelA.value; }
+function keyB(){ return s_modelB.value; }
+function labelA(){ return MODEL_META[keyA()].label; }
+function labelB(){ return MODEL_META[keyB()].label; }
 function getParams(){
-  return [
-    parseFloat(S.pressure.value), parseFloat(S.velocity.value), parseFloat(S.diameter.value),
-    parseFloat(S.length.value), parseFloat(S.roughness.value), parseFloat(S.compress.value)
-  ];
+  return [ parseFloat(S.pressure.value), parseFloat(S.velocity.value), parseFloat(S.diameter.value),
+    parseFloat(S.length.value), parseFloat(S.roughness.value), parseFloat(S.compress.value) ];
 }
 function updateLabels(){
   L.pressure.textContent = parseFloat(S.pressure.value).toFixed(0)+' bar';
@@ -1011,16 +1021,18 @@ function updateLabels(){
   L.roughness.textContent = parseFloat(S.roughness.value).toFixed(4)+' mm';
   L.compress.textContent = parseFloat(S.compress.value).toFixed(0)+' bar';
 }
+function speedLabel(v){
+  if(v<=2) return 'Very Slow'; if(v<=5) return 'Slow'; if(v<=10) return 'Medium'; if(v<=15) return 'Fast'; return 'Very Fast';
+}
+function updateSpeedLabel(){ lbl_speed.textContent = speedLabel(parseInt(s_speed.value,10))+' ('+s_speed.value+')'; }
 
 let currentTab='pressure';
 let lastRes=null;
-
 const simCanvas = document.getElementById('simCanvas');
 const cctx = simCanvas.getContext('2d');
 const chartTip = document.getElementById('chartTip');
 let dpr = Math.max(1, window.devicePixelRatio||1);
 let lastChartConfig = null;
-
 function resizeChart(){
   const rect = simCanvas.getBoundingClientRect();
   dpr = Math.max(1, window.devicePixelRatio||1);
@@ -1028,7 +1040,6 @@ function resizeChart(){
   simCanvas.height = Math.round(rect.height*dpr);
   cctx.setTransform(dpr,0,0,dpr,0,0);
 }
-
 function niceStep(range){
   const rough = range/5;
   const mag = Math.pow(10, Math.floor(Math.log10(rough||1)));
@@ -1037,7 +1048,6 @@ function niceStep(range){
   if(norm<1.5) step=1; else if(norm<3) step=2; else if(norm<7) step=5; else step=10;
   return step*mag;
 }
-
 function drawChart(config){
   lastChartConfig = config;
   const rect = simCanvas.getBoundingClientRect();
@@ -1045,7 +1055,6 @@ function drawChart(config){
   cctx.clearRect(0,0,W,H);
   const padL=54, padR=18, padT=26, padB=38;
   const plotW = W-padL-padR, plotH = H-padT-padB;
-
   let allY=[];
   config.series.forEach(s=> s.ys.forEach(v=>{ if(!isNaN(v)) allY.push(v); }));
   if(config.hline!==undefined) allY.push(config.hline);
@@ -1053,14 +1062,11 @@ function drawChart(config){
   let yMin=Math.min(...allY), yMax=Math.max(...allY);
   if(yMin===yMax){ yMin-=1; yMax+=1; }
   const pad=(yMax-yMin)*0.1; yMin-=pad; yMax+=pad;
-
   const xs = config.xs;
   const xMin = config.xLog ? Math.log10(xs[0]) : xs[0];
   const xMax = config.xLog ? Math.log10(xs[xs.length-1]) : xs[xs.length-1];
-
   function xPix(v){ const vv = config.xLog?Math.log10(v):v; return padL + (vv-xMin)/(xMax-xMin||1)*plotW; }
   function yPix(v){ return padT + (1-(v-yMin)/(yMax-yMin||1))*plotH; }
-
   cctx.strokeStyle='rgba(255,255,255,.07)'; cctx.lineWidth=1;
   cctx.fillStyle='#63676F'; cctx.font='10px "IBM Plex Mono",monospace'; cctx.textBaseline='middle';
   const yStep = niceStep(yMax-yMin);
@@ -1079,7 +1085,6 @@ function drawChart(config){
   }
   cctx.strokeStyle='rgba(255,255,255,.16)';
   cctx.beginPath(); cctx.moveTo(padL,padT); cctx.lineTo(padL,H-padB); cctx.lineTo(W-padR,H-padB); cctx.stroke();
-
   if(config.hline!==undefined){
     cctx.strokeStyle='rgba(255,77,106,.55)'; cctx.setLineDash([5,4]); cctx.lineWidth=1;
     const py=yPix(config.hline);
@@ -1088,7 +1093,6 @@ function drawChart(config){
     cctx.fillStyle='#FF4D6A'; cctx.textAlign='left'; cctx.textBaseline='bottom';
     cctx.fillText(config.hlineLabel||'', padL+6, py-3);
   }
-
   config.series.forEach(s=>{
     cctx.strokeStyle=s.color; cctx.lineWidth=2;
     if(s.dash) cctx.setLineDash(s.dash); else cctx.setLineDash([]);
@@ -1103,7 +1107,6 @@ function drawChart(config){
     cctx.stroke();
     cctx.setLineDash([]);
   });
-
   if(config.markersDw){
     config.markersDw.forEach(xv=>{
       const px=xPix(xv);
@@ -1120,7 +1123,21 @@ function drawChart(config){
       cctx.beginPath(); cctx.moveTo(px,H-padB-6); cctx.lineTo(px-5,H-padB-14); cctx.lineTo(px+5,H-padB-14); cctx.closePath(); cctx.fill();
     });
   }
-
+  if(config.front!==undefined && config.front!==null){
+    const pxF=xPix(config.front);
+    cctx.strokeStyle='rgba(255,255,255,.6)'; cctx.setLineDash([3,3]); cctx.lineWidth=1.5;
+    cctx.beginPath(); cctx.moveTo(pxF,padT); cctx.lineTo(pxF,H-padB); cctx.stroke(); cctx.setLineDash([]);
+    config.series.forEach(s=>{
+      let idx=0,bestD=Infinity;
+      xs.forEach((v,i)=>{ const d=Math.abs(v-config.front); if(d<bestD){bestD=d; idx=i;} });
+      const yv=s.ys[idx];
+      if(!isNaN(yv)){
+        const pyF=yPix(yv);
+        cctx.fillStyle=s.color; cctx.beginPath(); cctx.arc(pxF,pyF,4.5,0,Math.PI*2); cctx.fill();
+        cctx.strokeStyle='#0A0B0D'; cctx.lineWidth=1.4; cctx.stroke();
+      }
+    });
+  }
   let lx=padL+4;
   cctx.font='10px "IBM Plex Mono",monospace'; cctx.textBaseline='alphabetic'; cctx.textAlign='left';
   config.series.forEach(s=>{
@@ -1130,17 +1147,14 @@ function drawChart(config){
     cctx.fillText(s.label, lx+14, padT-11);
     lx += 14 + cctx.measureText(s.label).width + 18;
   });
-
   config._geom = {padL,padR,padT,padB,plotW,plotH,xMin,xMax,yMin,yMax,xPix,yPix};
 }
-
 function fmtAxis(v){
   if(Math.abs(v)>=1000) return v.toFixed(0);
   if(Math.abs(v)>=10) return v.toFixed(1);
   if(Math.abs(v)>=1) return v.toFixed(2);
   return v.toFixed(4);
 }
-
 function buildTooltipHandler(){
   simCanvas.onmousemove = (e)=>{
     if(!lastChartConfig) return;
@@ -1148,18 +1162,13 @@ function buildTooltipHandler(){
     const rect = simCanvas.getBoundingClientRect();
     const mx=e.clientX-rect.left, my=e.clientY-rect.top;
     const g=cfg._geom;
-    if(!g || mx<g.padL || mx>rect.width-g.padR || my<g.padT || my>rect.height-g.padB){
-      chartTip.style.opacity=0; return;
-    }
+    if(!g || mx<g.padL || mx>rect.width-g.padR || my<g.padT || my>rect.height-g.padB){ chartTip.style.opacity=0; return; }
     const frac=(mx-g.padL)/g.plotW;
     const xVal = cfg.xLog ? Math.pow(10, g.xMin+frac*(g.xMax-g.xMin)) : cfg.xs[0]+frac*(cfg.xs[cfg.xs.length-1]-cfg.xs[0]);
     let idx=0, bestD=Infinity;
     cfg.xs.forEach((v,i)=>{ const d=Math.abs((cfg.xLog?Math.log10(v):v)-(cfg.xLog?Math.log10(xVal):xVal)); if(d<bestD){bestD=d; idx=i;} });
     let lines=[`${cfg.xLabel}: ${fmtAxis(cfg.xs[idx])} ${cfg.xUnit||''}`];
-    cfg.series.forEach(s=>{
-      const yv=s.ys[idx];
-      if(!isNaN(yv)) lines.push(`${s.label}: ${fmtAxis(yv)} ${cfg.yUnit||''}`);
-    });
+    cfg.series.forEach(s=>{ const yv=s.ys[idx]; if(!isNaN(yv)) lines.push(`${s.label}: ${fmtAxis(yv)} ${cfg.yUnit||''}`); });
     chartTip.textContent = lines.join('\n');
     chartTip.style.left = Math.min(mx+14, rect.width-140)+'px';
     chartTip.style.top = Math.max(my-10, 6)+'px';
@@ -1168,112 +1177,109 @@ function buildTooltipHandler(){
   simCanvas.onmouseleave = ()=>{ chartTip.style.opacity=0; };
 }
 buildTooltipHandler();
-
+let animFrontKm=null, animRunning=false, animRAF=null, animLastTs=null;
 function renderCurrentTab(){
   if(!lastRes) return;
   const res = lastRes;
   resizeChart();
+  const mA=res.models[keyA()], mB=res.models[keyB()];
+  const front = animFrontKm;
   if(currentTab==='pressure'){
-    drawChart({
-      xs: res.x_km,
-      xLabel:'Distance', xUnit:'km', yUnit:'bar',
-      series:[
-        {ys:res.P_dw, color:'#E01B3D', label:'DW pressure'},
-        {ys:res.P_aga, color:'#ffffff', label:'AGA pressure'}
-      ],
+    drawChart({ xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'bar',
+      series:[{ys:mA.P, color:'#E01B3D', label:labelA()+' pressure'},{ys:mB.P, color:'#ffffff', label:labelB()+' pressure', dash:[6,4]}],
       hline: res.p_compress_bar, hlineLabel:`Compression trigger (${res.p_compress_bar.toFixed(0)} bar)`,
-      markersDw: res.sta_dw, markersAga: res.sta_aga,
-      dwColor:'#E01B3D', agaColor:'#ffffff'
-    });
+      markersDw: mA.stations, markersAga: mB.stations, dwColor:'#E01B3D', agaColor:'#ffffff', front });
   } else if(currentTab==='friction'){
     const eps_m = parseFloat(S.roughness.value)/1000.0;
     const D = parseFloat(S.diameter.value);
-    const reLo=4, reHi=8;
-    const N=200;
+    const reLo=4, reHi=8, N=200;
     const reArr=[], cwArr=[], ftArr=[];
     for(let i=0;i<N;i++){
       const logRe = reLo+(reHi-reLo)*i/(N-1);
       const Re = Math.pow(10, logRe);
       reArr.push(Re); cwArr.push(colebrook(Re,eps_m,D)); ftArr.push(fFullyTurbulent(D,eps_m));
     }
-    drawChart({
-      xs: reArr, xLog:true, xLabel:'Reynolds number', yUnit:'',
-      series:[
-        {ys:cwArr, color:'#E01B3D', label:'Colebrook-White'},
-        {ys:ftArr, color:'#ffffff', label:'Fully-turbulent', dash:[6,4]}
-      ]
-    });
+    drawChart({ xs: reArr, xLog:true, xLabel:'Reynolds number', yUnit:'',
+      series:[{ys:cwArr, color:'#E01B3D', label:'Colebrook-White'},{ys:ftArr, color:'#ffffff', label:'Fully-turbulent', dash:[6,4]}] });
   } else if(currentTab==='ztable'){
-    const N=300;
-    const pArr=[], zArr=[];
+    const N=300; const pArr=[], zArr=[];
     for(let i=0;i<N;i++){
       const p = Z_KEYS[0] + (Z_KEYS[Z_KEYS.length-1]-Z_KEYS[0])*i/(N-1);
       pArr.push(p); zArr.push(Zfn(p*1e5));
     }
-    drawChart({
-      xs: pArr, xLabel:'Pressure', xUnit:'bar', yUnit:'',
-      series:[{ys:zArr, color:'#E01B3D', label:'Z(P) interpolated'}]
-    });
+    drawChart({ xs: pArr, xLabel:'Pressure', xUnit:'bar', yUnit:'',
+      series:[{ys:zArr, color:'#E01B3D', label:(CURRENT_Z_MODEL==='gerg'?'Z(P) GERG-2004-style':'Z(P) tabulated')}] });
   } else if(currentTab==='velocity'){
-    drawChart({
-      xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'m/s',
-      series:[
-        {ys:res.V_dw, color:'#E01B3D', label:'DW local velocity'},
-        {ys:res.V_aga, color:'#ffffff', label:'AGA local velocity'}
-      ]
-    });
+    drawChart({ xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'m/s',
+      series:[{ys:mA.V, color:'#E01B3D', label:labelA()+' velocity'},{ys:mB.V, color:'#ffffff', label:labelB()+' velocity', dash:[6,4]}], front });
   } else if(currentTab==='density'){
-    drawChart({
-      xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'kg/m³',
-      series:[
-        {ys:res.Rho_dw, color:'#E01B3D', label:'DW local density'},
-        {ys:res.Rho_aga, color:'#ffffff', label:'AGA local density'}
-      ]
-    });
+    drawChart({ xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'kg/m³',
+      series:[{ys:mA.Rho, color:'#E01B3D', label:labelA()+' density'},{ys:mB.Rho, color:'#ffffff', label:labelB()+' density', dash:[6,4]}], front });
+  } else if(currentTab==='shear'){
+    drawChart({ xs: res.x_km, xLabel:'Distance', xUnit:'km', yUnit:'Pa',
+      series:[{ys:mA.Tau, color:'#E01B3D', label:labelA()+' shear'},{ys:mB.Tau, color:'#ffffff', label:labelB()+' shear', dash:[6,4]}], front });
   }
 }
-
+function updateTable(res){
+  let rows='';
+  MODEL_KEYS.forEach(key=>{
+    const m=res.models[key];
+    rows += `<tr><td>${MODEL_META[key].label}</td><td>${m.dist_reached.toFixed(2)}</td><td>${res.p_inlet_bar.toFixed(2)}</td><td>${m.P_out.toFixed(2)}</td><td>${m.loss.toFixed(4)}</td><td>${m.V_out.toFixed(2)}</td><td>${m.f_out.toFixed(5)}</td><td>${m.Tau_out.toFixed(3)}</td></tr>`;
+  });
+  document.getElementById('simTableBody').innerHTML = rows;
+}
 function updateStats(res){
   document.getElementById('st_z').textContent = res.Z_in.toFixed(4);
   document.getElementById('st_rho').textContent = res.rho_in.toFixed(3)+' kg/m³';
   document.getElementById('st_re').textContent = res.Re_in.toExponential(2);
   document.getElementById('st_mf').textContent = res.mass_flow.toFixed(2)+' kg/s';
   document.getElementById('st_q').textContent = res.Q_MMSCFD.toFixed(1)+' MMSCFD';
-
-  const diff = Math.abs(res.loss_dw-res.loss_aga);
-  const diffPct = res.loss_dw ? diff/res.loss_dw*100 : 0;
+  const mA=res.models[keyA()], mB=res.models[keyB()];
+  const diff = Math.abs(mA.loss-mB.loss);
+  const diffPct = mA.loss ? diff/mA.loss*100 : 0;
   const agree = diffPct<5;
-  const vEl = document.getElementById('st_verdict');
-  vEl.textContent = (agree?'AGREE':'DIVERGE')+' ('+diffPct.toFixed(1)+'%)';
-
-  document.getElementById('t_pout_dw').textContent = res.P_out_dw.toFixed(2);
-  document.getElementById('t_pout_aga').textContent = res.P_out_aga.toFixed(2);
-  document.getElementById('t_loss_dw').textContent = res.loss_dw.toFixed(4);
-  document.getElementById('t_loss_aga').textContent = res.loss_aga.toFixed(4);
-  document.getElementById('t_f_dw').textContent = res.f_cw.toFixed(5)+' (Re-dep.)';
-  document.getElementById('t_f_aga').textContent = res.f_ft.toFixed(5)+' (fixed)';
-  document.getElementById('t_sta_dw').textContent = res.sta_dw.length;
-  document.getElementById('t_sta_aga').textContent = res.sta_aga.length;
-  document.getElementById('t_dev').textContent = diffPct.toFixed(1)+'%';
+  document.getElementById('st_verdict').textContent = (agree?'AGREE ✓':'DIVERGE ✗')+' ('+diffPct.toFixed(1)+'%)';
+  updateTable(res);
 }
-
+function updateLiveStats(distKm){
+  if(!lastRes || distKm===null) return;
+  const res=lastRes, mA=res.models[keyA()], mB=res.models[keyB()];
+  let idx=0,bestD=Infinity;
+  res.x_km.forEach((v,i)=>{ const d=Math.abs(v-distKm); if(d<bestD){bestD=d; idx=i;} });
+  const Pa=mA.P[idx], Pb=mB.P[idx], Va=mA.V[idx], Vb=mB.V[idx];
+  const lossA=res.p_inlet_bar-Pa, lossB=res.p_inlet_bar-Pb;
+  document.getElementById('lv_dist').textContent = `Distance   : ${distKm.toFixed(1)} km`;
+  document.getElementById('lv_pa').textContent = `${labelA()} pres: ${isNaN(Pa)?'—':Pa.toFixed(3)+' bar'}`;
+  document.getElementById('lv_pb').textContent = `${labelB()} pres: ${isNaN(Pb)?'—':Pb.toFixed(3)+' bar'}`;
+  document.getElementById('lv_va').textContent = `${labelA()} veloc: ${isNaN(Va)?'—':Va.toFixed(2)+' m/s'}`;
+  document.getElementById('lv_vb').textContent = `${labelB()} veloc: ${isNaN(Vb)?'—':Vb.toFixed(2)+' m/s'}`;
+  document.getElementById('lv_la').textContent = `${labelA()} loss  : ${isNaN(lossA)?'—':lossA.toFixed(3)+' bar'}`;
+  document.getElementById('lv_lb').textContent = `${labelB()} loss  : ${isNaN(lossB)?'—':lossB.toFixed(3)+' bar'}`;
+  document.getElementById('lv_diff').textContent = `Diff A - B   : ${(!isNaN(lossA)&&!isNaN(lossB))?(lossA-lossB).toFixed(3)+' bar':'—'}`;
+}
 let recalcTimer=null;
 function recalc(){
   const [p,v,d,l,eps,pc] = getParams();
+  CURRENT_Z_MODEL = s_zmodel.value;
   lastRes = runModels(p,v,d,l,eps,pc);
-  updateLabels();
-  updateStats(lastRes);
-  renderCurrentTab();
+  if(animFrontKm!==null) animFrontKm = Math.min(animFrontKm, l);
+  updateLabels(); updateStats(lastRes); renderCurrentTab();
+  updateLiveStats(animFrontKm!==null ? animFrontKm : l);
+  updateButtons();
 }
 function scheduleRecalc(){ clearTimeout(recalcTimer); recalcTimer=setTimeout(recalc, 60); }
-
 Object.values(S).forEach(el=> el.addEventListener('input', scheduleRecalc));
+s_zmodel.addEventListener('change', scheduleRecalc);
+s_modelA.addEventListener('change', ()=>{ renderCurrentTab(); updateStats(lastRes); updateLiveStats(animFrontKm!==null?animFrontKm:parseFloat(S.length.value)); });
+s_modelB.addEventListener('change', ()=>{ renderCurrentTab(); updateStats(lastRes); updateLiveStats(animFrontKm!==null?animFrontKm:parseFloat(S.length.value)); });
+s_speed.addEventListener('input', updateSpeedLabel);
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   S.pressure.value=DEFAULTS.pressure; S.velocity.value=DEFAULTS.velocity; S.diameter.value=DEFAULTS.diameter;
   S.length.value=DEFAULTS.length; S.roughness.value=DEFAULTS.roughness; S.compress.value=DEFAULTS.compress;
+  s_modelA.value='dw'; s_modelB.value='aga'; s_zmodel.value='table'; s_speed.value=4; updateSpeedLabel();
+  animRunning=false; if(animRAF) cancelAnimationFrame(animRAF); animFrontKm=null; animStatusEl.textContent='';
   recalc();
 });
-
 document.getElementById('simTabs').addEventListener('click', e=>{
   const btn = e.target.closest('.sim-tab');
   if(!btn) return;
@@ -1283,9 +1289,80 @@ document.getElementById('simTabs').addEventListener('click', e=>{
   renderCurrentTab();
 });
 
+/* ── Animation: Play / Pause / Stop, a pressure-front travelling down the pipe ── */
+function speedKmPerSec(){
+  const v = parseInt(s_speed.value,10);
+  const length = parseFloat(S.length.value);
+  const duration = Math.max(42 - v*2, 1.5);
+  return length/duration;
+}
+function updateButtons(){
+  btnPlay.disabled = animRunning;
+  btnPause.disabled = !animRunning;
+  btnStop.disabled = (animFrontKm===null) && !animRunning;
+}
+function animStep(ts){
+  if(!animRunning) return;
+  if(animLastTs===null) animLastTs=ts;
+  const dt=(ts-animLastTs)/1000; animLastTs=ts;
+  const length=parseFloat(S.length.value);
+  animFrontKm = (animFrontKm||0) + speedKmPerSec()*dt;
+  if(animFrontKm>=length){ animFrontKm=length; animRunning=false; }
+  renderCurrentTab(); updateLiveStats(animFrontKm); updateButtons();
+  animStatusEl.textContent = animRunning ? `Front: ${animFrontKm.toFixed(1)} / ${length.toFixed(1)} km` : `Reached outlet — ${length.toFixed(1)} km`;
+  if(animRunning) animRAF=requestAnimationFrame(animStep);
+}
+btnPlay.addEventListener('click', ()=>{
+  const length=parseFloat(S.length.value);
+  if(animFrontKm===null || animFrontKm>=length) animFrontKm=0;
+  animRunning=true; animLastTs=null; updateButtons();
+  animRAF=requestAnimationFrame(animStep);
+});
+btnPause.addEventListener('click', ()=>{
+  animRunning=false; if(animRAF) cancelAnimationFrame(animRAF); updateButtons();
+  animStatusEl.textContent = `Paused at ${(animFrontKm||0).toFixed(1)} km`;
+});
+btnStop.addEventListener('click', ()=>{
+  animRunning=false; if(animRAF) cancelAnimationFrame(animRAF);
+  animFrontKm=null; animStatusEl.textContent=''; updateButtons();
+  renderCurrentTab(); updateLiveStats(parseFloat(S.length.value));
+});
+updateButtons();
+
 let rt2; window.addEventListener('resize', ()=>{ clearTimeout(rt2); rt2=setTimeout(renderCurrentTab,150); });
-updateLabels();
-recalc();
+updateLabels(); updateSpeedLabel();
+
+/* ── Access gate: unlock simulator only after name/email/organization ── */
+const simGate = document.getElementById('simGate');
+const simOutput = document.getElementById('simOutput');
+const gateForm = document.getElementById('gateForm');
+const gateErr = document.getElementById('gateErr');
+function unlockSim(){
+  simGate.style.display='none';
+  simOutput.style.display='block';
+  simOutput.setAttribute('aria-hidden','false');
+  recalc();
+}
+const GFORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfq1uRblzIR4MieJp9gosnWSx-b6dn5zaN94GoEqBVJX8SAxw/formResponse';
+const GFORM_ENTRIES = { name:'entry.324614516', email:'entry.22522498', org:'entry.590099451' };
+function submitToGoogleForm(name,email,org){
+  const body = new URLSearchParams();
+  body.append(GFORM_ENTRIES.name, name);
+  body.append(GFORM_ENTRIES.email, email);
+  body.append(GFORM_ENTRIES.org, org);
+  fetch(GFORM_ACTION, { method:'POST', mode:'no-cors', body }).catch(function(){});
+}
+gateForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  const name=document.getElementById('g_name').value.trim();
+  const email=document.getElementById('g_email').value.trim();
+  const org=document.getElementById('g_org').value.trim();
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if(!name || !org || !emailOk){ gateErr.style.display='block'; return; }
+  gateErr.style.display='none';
+  submitToGoogleForm(name,email,org);
+  unlockSim();
+});
 
 })();
 </script>
